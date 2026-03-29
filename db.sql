@@ -11,10 +11,10 @@ CREATE TABLE User (
     password_hash TEXT NOT NULL,
     created_dt DATE DEFAULT (CURRENT_DATE),
     CONSTRAINT chk_id_format CHECK (
-        (user_id LIKE 'dnr%') OR 
-        (user_id LIKE 'hsp%') OR 
-        (user_id LIKE 'bnk%') OR 
-        (user_id LIKE 'adm%')
+        (user_id LIKE 'DNR%') OR 
+        (user_id LIKE 'HSP%') OR 
+        (user_id LIKE 'BNK%') OR 
+        (user_id LIKE 'ADM%')
     )
 );
 
