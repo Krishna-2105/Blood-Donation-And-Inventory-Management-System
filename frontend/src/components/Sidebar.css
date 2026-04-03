@@ -1,0 +1,28 @@
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background: #111;
+    color: white;
+    padding: 20px;
+}
+
+.logo {
+    margin-bottom: 30px;
+}
+
+.menu-item {
+    display: block;
+    padding: 10px;
+    color: #ccc;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.menu-item:hover {
+    background: #222;
+}
+
+.menu-item.active {
+    background: #e63946;
+    color: white;
+}

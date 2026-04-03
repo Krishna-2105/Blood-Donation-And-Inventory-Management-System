@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login } from "../services/authServices"
 import "../styles/auth.css"
-
+import { roleRoutes } from '../utils/roleRoutes'
+import { getUserType } from '../utils/getUserType'
 function Login() {   
     const [identifier, setIdentifier] = useState("")
     const [password, setPassword] = useState("")
@@ -18,7 +19,7 @@ function Login() {
 
         if (data.success) {
             localStorage.setItem("token", data.token)
-            navigate("/dashboard")
+            navigate(roleRoutes[getUserType(data.user_id)])
         } else {
             alert(data.message)
         }
