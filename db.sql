@@ -6,8 +6,8 @@ CREATE TABLE User (
     user_id CHAR(10) PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     email VARCHAR(50) UNIQUE NOT NULL,
-    phone_no VARCHAR(20) UNIQUE NOT NULL,
-    user_type ENUM('donor', 'hospital', 'bank', 'admin') NOT NULL,
+    phone_no VARCHAR(20) NOT NULL,
+    user_type ENUM('donor', 'hospital', 'blood_bank', 'admin') NOT NULL,
     password_hash TEXT NOT NULL,
     created_dt DATE DEFAULT (CURRENT_DATE),
     CONSTRAINT chk_id_format CHECK (
