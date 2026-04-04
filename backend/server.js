@@ -12,6 +12,7 @@ const hospitalRoutes=require("./Routes/hospitalRoutes.js")
 const profileSetupRoutes=require("./Routes/profileSetupRoutes.js")
 const profileStatusRoute=require("./Routes/profileStatusRoutes.js")
 
+
 app.use(
   cors({
     origin: "http://localhost:5173", // your React app URL
@@ -34,7 +35,7 @@ app.get("/",(req,res) => {
       success: true
     }
   )
-})
+
 
 app.listen(process.env.PORT,()=>{
     console.log(`Server runnnig on port ${process.env.PORT}`)
