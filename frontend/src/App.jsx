@@ -1,39 +1,30 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-
-import Login from './pages/Login'
-import Signup from './pages/Signup'
-
-// Layout
-import DashboardLayout from './layouts/DashboardLayout'
-
-// Dashboards
-import DonorDashboard from './pages/dashboard/Donor/DonorDashboard'
-import HospitalDashboard from './pages/dashboard/Hospital/HospitalDashboard'
-import AdminDashboard from './pages/dashboard/Admin/AdminDashboard'
-import BloodBankDashboard from './pages/dashboard/BloodBank/BloodBankDashboard'
-
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
+import ProtectedRoute from "./routes/ProtectedRoutes";
+import DonorSetup from "./pages/setup/DonorSetup";
+import HospitalSetup from "./pages/setup/HospitalSetup";
+import BloodBankSetup from "./pages/setup/BloodBankSetup";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Auth */}
+        
+        {/* Public */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Dashboard (shared layout) */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
-
-          <Route path="donor" element={<DonorDashboard />} />
-          <Route path="hospital" element={<HospitalDashboard />} />
-          <Route path="admin" element={<AdminDashboard />} />
-          <Route path="bloodbank" element={<BloodBankDashboard />} />
-
-        </Route>
+        {/* Protected */}
+       <Route element={<ProtectedRoute />}>
+  <Route path="/dashboard" element={<h1>Dashboard</h1>} />
+  <Route path="/setup/donor" element={<DonorSetup />} />
+  <Route path="/setup/hospital" element={<HospitalSetup />} />
+  <Route path="/setup/bloodbank" element={<BloodBankSetup />} />
+</Route>
 
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,18 +1,18 @@
-/* Remove default spacing */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Prevent white borders + scrolling */
+
 html, body {
     height: 100%;
-    overflow: hidden; /* 🔥 removes scroll */
+    overflow: hidden; 
     font-family: Arial, sans-serif;
 }
 
-/* Root element (React) */
+
 #root {
     height: 100%;
 }
