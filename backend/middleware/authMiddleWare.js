@@ -15,7 +15,7 @@ const authMiddleWare=(req,res,next)=>{
             return res.status(401).json({message:"Invalid token format",success:false})
         }
         const token=parts[1]
-        console.log("TOKEN:", token);
+        // console.log("TOKEN:", token);
         const decoded=jwt.verify(token,"secret21")
         req.user=decoded
 

@@ -29,7 +29,7 @@ function HospitalSetup() {
     e.preventDefault();
 
     try {
-      await API.post("/api/setup/donor", form);
+      await API.post("/setup/hospital", form);
 
       alert("Setup complete");
       navigate("/dashboard");

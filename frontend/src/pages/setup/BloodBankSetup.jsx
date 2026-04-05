@@ -21,7 +21,7 @@ function BloodBankSetup() {
     e.preventDefault();
 
     try {
-      await API.post("/api/setup/bloodbank", form);
+      await API.post("/setup/bloodbank", form);
 
       alert("Setup complete");
       navigate("/dashboard");

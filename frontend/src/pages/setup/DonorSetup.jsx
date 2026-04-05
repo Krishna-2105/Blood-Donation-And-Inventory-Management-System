@@ -21,7 +21,7 @@ function DonorSetup() {
     e.preventDefault();
 
     try {
-      await API.post("/api/setup/donor", form);
+      await API.post("/setup/donor", form);
 
       alert("Profile completed");
       navigate("/dashboard");

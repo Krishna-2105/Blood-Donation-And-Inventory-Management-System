@@ -1,46 +1,33 @@
-import { useEffect, useState } from "react";
-import API from "../../api/axios";
+import { useAuth } from "../../context/AuthContext";
 
-import DonorDashboard from "./donor/DonorDashboard";
-import HospitalDashboard from "./hospital/HospitalDashboard";
-import HospitalWithBank from "./hospital/HospitalWithBank";
-import BloodBankDashboard from "./bloodbank/BloodBankDashboard";
+import DonorHome from "./donor/DonorHome";
+import BloodBankHome from "./bloodbank/BloodBankHome";
+import HospitalHome from "./hospital/HospitalHome";
 
 function DashboardRouter() {
-  const [data, setData] = useState(null);
+  const { role, hasBloodBank } = useAuth();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await API.get("/profile/status");
-        setData(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (!data) return <p>Loading...</p>;
-
-  
-  if (data.user_type === "donor") {
-    return <DonorDashboard />;
+  // 🧑 DONOR
+  if (role === "donor") {
+    return <DonorHome />;
   }
 
-  if (data.user_type === "hospital") {
-    if (data.owns_bank) {
-      return <HospitalWithBank />;
-    }
-    return <HospitalDashboard />;
+  // 🏥 HOSPITAL WITHOUT BANK
+  if (role === "hospital" && !hasBloodBank) {
+    return <HospitalHome />;
   }
 
-  if (data.user_type === "blood_bank") {
-    return <BloodBankDashboard />;
+  // 🏥 HOSPITAL WITH BANK (acts like blood bank)
+  if (role === "hospital" && hasBloodBank) {
+    return <BloodBankHome />;
   }
 
-  return <h1>Admin Dashboard</h1>;
+  // 🩸 BLOOD BANK
+  if (role === "blood_bank") {
+    return <BloodBankHome />;
+  }
+
+  return <p>Unauthorized</p>;
 }
 
 export default DashboardRouter;

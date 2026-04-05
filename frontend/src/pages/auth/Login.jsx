@@ -19,26 +19,49 @@ function Login() {
         });
     };
 
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
+            // 1. login
             const res = await API.post("/auth/login", form);
+            const token = res.data.token;
 
-            login(res.data.token);
-            const profile = await API.get("/profile/status");
+            // 2. store token (important for next API call)
+            localStorage.setItem("token", token);
 
-            if (!profile.data.profile_complete) {
-                if (profile.data.user_type === "donor") {
+            // 3. call YOUR profile status API
+            const profileRes = await API.get("/profile/status");
+
+            const { user_type, profile_complete } = profileRes.data;
+
+            // 4. store in context
+            login(token, user_type);
+
+            // 🔥 5. DECIDE FLOW
+
+            if (!profile_complete) {
+                // first login → setup
+                if (user_type === "donor") {
                     navigate("/setup/donor");
-                } else if (profile.data.user_type === "hospital") {
+                } else if (user_type === "hospital") {
                     navigate("/setup/hospital");
-                }
-                else if (profile.data.user_type === "blood_bank") {
+                } else if (user_type === "blood_bank") {
                     navigate("/setup/bloodbank");
                 }
             } else {
-                navigate("/dashboard");
+                // existing user → dashboard
+                if (user_type === "donor") {
+                    navigate("/dashboard");
+                } else if (user_type === "hospital") {
+                    navigate("/dashboard");
+                } else if (user_type === "blood_bank") {
+                    navigate("/dashboard");
+                } else if (user_type === "admin") {
+                    navigate("/dashboard");
+                }
             }
 
         } catch (err) {

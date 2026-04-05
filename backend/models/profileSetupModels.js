@@ -36,7 +36,7 @@ const insertBloodBank = async ({ user_id, latitude, longitude }) => {
 
   // Optional: Organization table
   await db.promise().query(
-    `INSERT INTO Organization (organization_id, latitude, longitude)
+    `INSERT INTO Organization_Location (organisation_id, latitude, longitude)
      VALUES (?, ?, ?)`,
     [user_id, latitude, longitude]
   );
@@ -60,7 +60,7 @@ const insertHospital = async ({ user_id, latitude, longitude }) => {
   );
 
   await db.promise().query(
-    `INSERT INTO Organization (organization_id, latitude, longitude)
+    `INSERT INTO Organization_Location(organisation_id, latitude, longitude)
      VALUES (?, ?, ?)`,
     [user_id, latitude, longitude]
   );

@@ -1,41 +1,60 @@
-import { useEffect, useState } from "react";
-import API from "../api/axios";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Sidebar() {
-  const [userType, setUserType] = useState("");
+    const { role, hasBloodBank } = useAuth();
 
-  useEffect(() => {
-    const fetch = async () => {
-      const res = await API.get("/profile/status");
-      setUserType(res.data.user_type);
-    };
-    fetch();
-  }, []);
+    return (
+        <div style={sidebar}>
+            <h2>BDMS</h2>
 
-  return (
-    <div style={{ width: "200px", background: "#111", color: "white", padding: "20px" }}>
-      <h3>Dashboard</h3>
+            {/* DONOR */}
+            {role === "donor" && (
+                <>
+                    <Link to="/dashboard">Home</Link>
+                    <Link to="/dashboard/profile">Profile</Link>
+                    <Link to="/dashboard/history">History</Link>
+                </>
+            )}
 
-      <ul style={{ listStyle: "none", padding: 0 }}>
+            {/* BLOOD BANK */}
+            {role === "blood_bank" && (
+                <>
+                    <Link to="/dashboard">Dashboard</Link>
+                    <Link to="/dashboard/inventory">Inventory</Link>
+                    <Link to="/dashboard/requests">Requests</Link>
+                    <Link to="/dashboard/donations">Donations</Link>
+                </>
 
-        <li><Link to="/dashboard">Home</Link></li>
+            )}
+            {role === "hospital" && !hasBloodBank && (
+                <>
+                    <Link to="/dashboard">Dashboard</Link>
+                    <Link to="/dashboard/request">Request Blood</Link>
+                    <Link to="/dashboard/my-requests">My Requests</Link>
+                </>
+            )}
 
-        {userType === "donor" && (
-          <li><Link to="/dashboard/history">Donation History</Link></li>
-        )}
-
-        {userType === "hospital" && (
-          <li><Link to="/dashboard/bloodbank">Manage Blood Bank</Link></li>
-        )}
-
-        {userType === "blood_bank" && (
-          <li><Link to="/dashboard/inventory">Inventory</Link></li>
-        )}
-
-      </ul>
-    </div>
-  );
+            {role === "hospital" && hasBloodBank && (
+                <>
+                    <Link to="/dashboard">Dashboard</Link>
+                    <Link to="/dashboard/inventory">Inventory</Link>
+                    <Link to="/dashboard/requests">Incoming Requests</Link>
+                    <Link to="/dashboard/donations">Donations</Link>
+                </>
+            )}
+        </div>
+    );
 }
+
+const sidebar = {
+    width: "220px",
+    background: "#111",
+    color: "white",
+    padding: "20px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px"
+};
 
 export default Sidebar;
