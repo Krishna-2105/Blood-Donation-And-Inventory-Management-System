@@ -7,8 +7,8 @@ function DonorHome() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const prof = await API.get("/profile/details");
-      const last = await API.get("/donor/last");
+      const prof = await API.get("/donor/profile");
+      const last = await API.get("/donor/lastdt");
 
       setProfile(prof.data);
       setLastDonation(last.data);

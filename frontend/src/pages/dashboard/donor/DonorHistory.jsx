@@ -9,7 +9,7 @@ function DonorHistory() {
     const fetch = async () => {
       try {
         const res = await API.get("/donor/history");
-        setHistory(res.data);
+        setHistory(res.data.history);
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -52,7 +52,7 @@ function DonorHistory() {
               {history.map((item, i) => (
                 <tr key={i}>
                   <td style={td}>{formatDate(item.donation_date)}</td>
-                  <td style={td}>{item.hospital_name}</td>
+                  <td style={td}>{item.name}</td>
                 </tr>
               ))}
             </tbody>

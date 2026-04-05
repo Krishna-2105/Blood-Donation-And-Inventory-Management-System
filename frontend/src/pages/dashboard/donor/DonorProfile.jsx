@@ -15,7 +15,7 @@ function DonorProfile() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const res = await API.get("/profile/details");
+        const res = await API.get("/donor/profile");
         setForm(res.data);
         setLoading(false);
       } catch (err) {
