@@ -1,6 +1,6 @@
 // const getProfile = require("../models/profileModels");
 const {getDonorDetails,getHistory,getLastDonation}=require("../models/donorModels")
-const getProfile=require("../models/profileModels")
+const {getProfile}=require("../models/profileModels")
 const donorProfileRoute=async (req,res)=>{
       try {
             const userId = req.user.user_id;

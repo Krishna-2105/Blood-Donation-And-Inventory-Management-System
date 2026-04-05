@@ -25,7 +25,7 @@ const signupUser = async (req, res) => {
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
       return res.status(400).json({
-        message: "Email or phone already exists",
+        message: "Email already exists",
       });
     }
     console.log("SIGNUP ERROR:", error);

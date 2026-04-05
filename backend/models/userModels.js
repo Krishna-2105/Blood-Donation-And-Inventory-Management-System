@@ -17,8 +17,6 @@ const generateUserId = (user_type) => {
       break;
       case "admin":
         prefix="ADM";
-    default:
-      prefix = "USR";
   }
 
   return prefix + Date.now().toString().slice(-6); // Example: HSP839201 , ensures uniqueness
