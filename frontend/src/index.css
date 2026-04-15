@@ -1,13 +1,19 @@
 :root {
-  --color-primary: #2563eb;
+  --color-primary: #b91c1c;
+  --color-primary-soft: #fca5a5;
   --color-success: #16a34a;
-  --color-error: #dc2626;
+  --color-error: #ef4444;
   --color-warning: #f59e0b;
-  --color-bg: #f8fafc;
-  --color-card: #ffffff;
-  --color-text: #0f172a;
-  --color-muted: #64748b;
-  --color-border: #e2e8f0;
+  --color-bg: #0f172a;
+  --color-surface: #111827;
+  --color-card: #1f2937;
+  --color-card-strong: #111827;
+  --color-text: #e2e8f0;
+  --color-muted: #94a3b8;
+  --color-border: #334155;
+  --color-border-strong: #1f2a3b;
+  --color-accent: #f87171;
+  --color-link: #fca5a5;
 
   --space-12: 12px;
   --space-16: 16px;
@@ -15,7 +21,7 @@
 
   --radius-10: 10px;
   --radius-8: 8px;
-  --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-card: 0 20px 45px rgba(15, 23, 42, 0.45);
 }
 
 * {
@@ -26,13 +32,14 @@
 }
 
 body {
-  background: var(--color-bg);
+  background: radial-gradient(circle at top, rgba(244, 63, 94, 0.14), transparent 28%),
+    var(--color-bg);
   color: var(--color-text);
 }
 
 a {
   text-decoration: none;
-  color: inherit;
+  color: var(--color-link);
 }
 
 h1, h2, h3, h4 {
@@ -56,8 +63,8 @@ p {
 
 .sidebar {
   width: 240px;
-  background: #0b1220;
-  color: white;
+  background: linear-gradient(180deg, #111827, #0f172a);
+  color: #f8fafc;
   padding: var(--space-24);
   display: flex;
   flex-direction: column;
@@ -65,23 +72,31 @@ p {
   position: sticky;
   top: 0;
   height: 100vh;
+  border-right: 1px solid rgba(148, 163, 184, 0.12);
 }
 
 .sidebar__brand {
   font-size: 20px;
   margin-bottom: 10px;
+  color: #f8fafc;
 }
 
 .nav-link {
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 12px;
   color: #cbd5e1;
   display: block;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.nav-link:hover {
+  background: rgba(248, 113, 113, 0.12);
+  color: #fff;
 }
 
 .nav-link.active {
-  background: rgba(37, 99, 235, 0.18);
-  color: white;
+  background: rgba(239, 68, 68, 0.18);
+  color: #fff;
 }
 
 .main {
@@ -93,7 +108,7 @@ p {
 
 .topbar {
   height: 60px;
-  background: var(--color-card);
+  background: var(--color-card-strong);
   border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
@@ -141,14 +156,17 @@ p {
   background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 10px 14px;
   cursor: pointer;
   font-weight: 600;
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.18);
 }
 
 .btn:hover {
-  filter: brightness(0.95);
+  filter: brightness(1.05);
+  transform: translateY(-1px);
 }
 
 .btn:disabled {
@@ -157,7 +175,8 @@ p {
 }
 
 .btn.secondary {
-  background: #0f172a;
+  background: #334155;
+  color: #e2e8f0;
 }
 
 .btn.danger {
@@ -177,16 +196,21 @@ p {
 }
 
 .input, select.input {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #334155;
   outline: none;
-  background: white;
+  background: #0f172a;
+  color: var(--color-text);
+}
+
+.input::placeholder {
+  color: #94a3b8;
 }
 
 .input:focus, select.input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  border-color: rgba(248, 113, 113, 0.7);
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.16);
 }
 
 .form {
@@ -201,19 +225,26 @@ p {
   overflow: hidden;
   border-radius: 10px;
   border: 1px solid var(--color-border);
+  background: var(--color-card);
 }
 
 .table th {
   text-align: left;
-  background: #f1f5f9;
+  background: #111827;
   font-size: 13px;
   color: var(--color-muted);
   padding: 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
 }
 
 .table td {
   padding: 12px;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid rgba(148, 163, 184, 0.08);
+  color: var(--color-text);
+}
+
+.table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .badge {
@@ -227,7 +258,7 @@ p {
 }
 
 .badge.pending {
-  background: var(--color-warning);
+  background: #fbbf24;
 }
 .badge.success {
   background: var(--color-success);
@@ -249,10 +280,15 @@ p {
   align-items: center;
   justify-content: center;
   padding: var(--space-24);
+  background: radial-gradient(circle at top, rgba(248, 113, 113, 0.08), transparent 28%),
+    var(--color-bg);
 }
 
 .auth-card {
   width: 420px;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
 }
 
 /* Toasts */
@@ -276,7 +312,7 @@ p {
   justify-content: space-between;
   gap: 12px;
   align-items: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.32);
   animation: toast-in 180ms ease-out;
 }
 
