@@ -70,7 +70,7 @@ CREATE TABLE Blood_Stock (
     stock_id INT,
     blood_grp ENUM('A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'),
     units_available INT DEFAULT 0 CHECK (units_available >= 0),
-    donation_id INT,
+    donation_id INT UNIQUE,
     PRIMARY KEY (bank_id, stock_id),
     FOREIGN KEY (bank_id) REFERENCES Blood_Bank(bank_id) ON DELETE RESTRICT,
     FOREIGN KEY (donation_id) REFERENCES Donation(donation_id) ON DELETE RESTRICT
@@ -105,7 +105,7 @@ CREATE TABLE Blood_issued_to_hospital (
     blood_grp ENUM('A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'),
     units_issued INT CHECK (units_issued > 0),
     issued_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    request_id VARCHAR(36),
+    request_id VARCHAR(36) UNIQUE,
     FOREIGN KEY (bank_id) REFERENCES Blood_Bank(bank_id) ON DELETE RESTRICT,
     FOREIGN KEY (request_id) REFERENCES Blood_Request_from_hospital(request_id) ON DELETE RESTRICT
 );
