@@ -246,6 +246,8 @@ erDiagram
 
 > Run `db.sql` to set up the full schema. For incremental updates, see `backend/migrations/v2_schema.sql`.
 
+📐 The schema is normalized up to **Boyce-Codd Normal Form (BCNF)** — all functional dependencies are on superkeys, with no partial or transitive dependencies across tables.
+
 ---
 
 ## 🚀 Getting Started
