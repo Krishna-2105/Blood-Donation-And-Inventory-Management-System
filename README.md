@@ -187,7 +187,6 @@ erDiagram
     Blood_Stock {
         char(10) bank_id FK
         int stock_id
-        enum blood_grp
         int units_available
         int donation_id FK
     }
