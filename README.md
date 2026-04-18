@@ -1,4 +1,4 @@
-# 🩸 Blood Donation Management System
+# 🩸 Blood Donation And Inventory Management System
 
 <p align="center">
   <img src="https://img.shields.io/badge/Frontend-React%2019-61DAFB?style=for-the-badge&logo=react"/>
@@ -246,7 +246,7 @@ erDiagram
 
 > Run `db.sql` to set up the full schema. For incremental updates, see `backend/migrations/v2_schema.sql`.
 
-📐 The schema is normalized up to **Boyce-Codd Normal Form (BCNF)** — all functional dependencies are on superkeys, with no partial or transitive dependencies across tables.
+> 📐 The schema is normalized up to **Boyce-Codd Normal Form (BCNF)** — all functional dependencies are on superkeys, with no partial or transitive dependencies across tables.
 
 ---
 
@@ -262,7 +262,7 @@ erDiagram
 
 ```bash
 git clone <your-repo-url>
-cd Blood-Donation-Management-System
+cd Blood-Donation-And-Inventory-Management-System
 ```
 
 ### 2. Set Up the Database
