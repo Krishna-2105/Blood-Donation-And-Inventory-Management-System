@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../../../api/axios";
 import Card from "../../../ui/Card";
 import EmptyState from "../../../ui/EmptyState";
+import { formatDate } from "../../../utils/formatDate";
 
 function AdminIssued() {
   const [data, setData] = useState(null);
@@ -53,7 +54,7 @@ function AdminIssued() {
                     <b>{i.blood_grp}</b>
                   </td>
                   <td>{i.units}</td>
-                  <td>{i.issued_date}</td>
+                  <td>{formatDate(i.issued_date)}</td>
                 </tr>
               ))}
             </tbody>
@@ -65,4 +66,3 @@ function AdminIssued() {
 }
 
 export default AdminIssued;
-

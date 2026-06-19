@@ -6,6 +6,5 @@ export default function Badge({ status }) {
       : s === "rejected" || s === "cancelled"
         ? "error"
         : "pending";
-  return <span className={`badge ${type}`}>{status}</span>;
+  return <span className={`badge ${type}`} style={{ textTransform: 'capitalize' }}>{status}</span>;
 }
-

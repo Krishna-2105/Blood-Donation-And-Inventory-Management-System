@@ -97,6 +97,7 @@ const getDashboardData = async (bank_id) => {
   // bank identity
   const [bankInfo] = await conn.query(
     `SELECT u.user_id AS bank_id, u.name AS bank_name, u.email AS bank_email
+     , u.created_dt AS created_dt
      FROM \`User\` u
      WHERE u.user_id = ?`,
     [bank_id]
@@ -141,6 +142,7 @@ const getDashboardData = async (bank_id) => {
     bank_id: bankInfo[0]?.bank_id || bank_id,
     bank_name: bankInfo[0]?.bank_name || "",
     bank_email: bankInfo[0]?.bank_email || "",
+    created_dt: bankInfo[0]?.created_dt || null,
     total_units: total[0].total_units || 0,
     pending_requests: pending[0].pending_requests,
     donations_this_month: donations[0].donations_this_month,

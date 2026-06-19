@@ -13,7 +13,8 @@ const signupUser = async (req, res) => {
     const phone_no = typeof rawPhone === "string" ? rawPhone.trim() : "";
     const password = typeof rawPassword === "string" ? rawPassword.trim() : "";
     const user_type = typeof rawUserType === "string" ? rawUserType.trim() : "";
-    const allowedUserTypes = ["donor", "hospital", "blood_bank", "admin"];
+    // Public signup allowed roles (admin cannot be self-registered)
+    const allowedUserTypes = ["donor", "hospital", "blood_bank"];
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!name || !email || !password || !user_type) {
@@ -24,6 +25,11 @@ const signupUser = async (req, res) => {
     }
     if (!allowedUserTypes.includes(user_type)) {
       return res.status(400).json({ message: "Invalid user type" });
+    }
+
+    // Explicit rejection for admin role even if provided
+    if (user_type === "admin") {
+      return res.status(403).json({ message: "Cannot register as admin" });
     }
 
     const created = await createUser({

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../../../api/axios";
 import Card from "../../../ui/Card";
 import EmptyState from "../../../ui/EmptyState";
+import { formatDate } from "../../../utils/formatDate";
 
 function BloodBankHome() {
   const [data, setData] = useState(null);
@@ -38,6 +39,11 @@ function BloodBankHome() {
           <h2>{data.donations_this_month}</h2>
           <p className="muted">Recorded donations</p>
         </Card>
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        <div className="muted">Member Since</div>
+        <div style={{ fontFamily: 'monospace', fontWeight: 800 }}>{formatDate(data.created_dt || data.created_at)}</div>
       </div>
 
       {data.low_stock?.length > 0 && (

@@ -65,7 +65,6 @@ function Signup() {
               <option value="donor">Donor</option>
               <option value="hospital">Hospital</option>
               <option value="blood_bank">Blood Bank</option>
-              <option value="admin">Admin</option>
             </select>
           </div>
 

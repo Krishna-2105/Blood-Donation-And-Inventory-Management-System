@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import API from "../../api/axios";
-import Card from "../../ui/Card";
-import Input from "../../ui/Input";
-import Button from "../../ui/Button";
-import { useToast } from "../../context/ToastContext";
-import { formatDate } from "../../utils/formatDate";
+import API from "../../../api/axios";
+import Card from "../../../ui/Card";
+import Input from "../../../ui/Input";
+import Button from "../../../ui/Button";
+import { useToast } from "../../../context/ToastContext";
+import { formatDate } from "../../../utils/formatDate";
 
-function UserProfile() {
+function AdminProfile() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -57,11 +57,10 @@ function UserProfile() {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p style={{ color: "var(--color-error)" }}>{error}</p>;
-  if (!data) return null;
 
   return (
     <div>
-      <h2>My Profile</h2>
+      <h2>Admin Profile</h2>
 
       <div style={{ marginTop: 16 }}>
         <Card title="Account Details">
@@ -72,7 +71,7 @@ function UserProfile() {
               <tr><th>Email</th><td>{data.email}</td></tr>
               <tr><th>Phone</th><td>{data.phone_no}</td></tr>
               <tr><th>Role</th><td>{data.user_type}</td></tr>
-              <tr><th>Created</th><td>{formatDate(data.created_dt || data.created_at)}</td></tr>
+                <tr><th>Created</th><td>{formatDate(data.created_dt || data.created_at)}</td></tr>
             </tbody>
           </table>
         </Card>
@@ -80,21 +79,13 @@ function UserProfile() {
 
       <div style={{ marginTop: 16 }}>
         <Card title="Role Details">
-          {data.user_type === "donor" ? (
-            <table className="table">
-              <tbody>
-                <tr><th>Blood Group</th><td>{data.extra?.blood_grp || "—"}</td></tr>
-                <tr><th>Date of Birth</th><td>{formatDate(data.extra?.dob) || "—"}</td></tr>
-              </tbody>
-            </table>
-          ) : (
-            <table className="table">
-              <tbody>
-                <tr><th>Latitude</th><td>{data.extra?.latitude ?? "—"}</td></tr>
-                <tr><th>Longitude</th><td>{data.extra?.longitude ?? "—"}</td></tr>
-              </tbody>
-            </table>
-          )}
+          <p className="muted">Administrators have full access to user management, audit logs and system-wide dashboards.</p>
+          <table className="table" style={{ marginTop: 8 }}>
+            <tbody>
+              <tr><th>Admin ID</th><td style={{ fontFamily: 'monospace' }}>{data.user_id}</td></tr>
+              <tr><th>Permissions</th><td>Manage Users, Manage Stock, View Audit Logs</td></tr>
+            </tbody>
+          </table>
         </Card>
       </div>
 
@@ -124,4 +115,4 @@ function UserProfile() {
   );
 }
 
-export default UserProfile;
+export default AdminProfile;

@@ -2,7 +2,7 @@ const db = require("../config/db");
 
 const getBaseUser = async (user_id) => {
   const [rows] = await db.promise().query(
-    `SELECT user_id, name, email, phone_no, user_type
+    `SELECT user_id, name, email, phone_no, user_type, created_dt
      FROM \`User\`
      WHERE user_id = ?`,
     [user_id]
@@ -68,4 +68,3 @@ module.exports = {
   updatePasswordHash,
   findUserByEmail,
 };
-

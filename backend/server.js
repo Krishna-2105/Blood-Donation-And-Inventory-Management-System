@@ -17,6 +17,7 @@ const profileStatusRoute = require("./Routes/profileStatusRoutes.js")
 const ownedBankRoutes = require("./Routes/ownedBankRoutes.js")
 const userRoutes = require("./Routes/userRoutes.js")
 const adminRoutes = require("./Routes/adminRoutes.js")
+const publicRoutes = require("./Routes/publicRoutes.js")
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -37,6 +38,7 @@ app.use('/api/profile/status', profileStatusRoute)
 app.use('/api/ownedbank', ownedBankRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/public', publicRoutes)
 
 // Test route
 

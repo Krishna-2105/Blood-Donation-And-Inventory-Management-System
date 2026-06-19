@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { formatDate } from "../../../utils/formatDate";
 import API from "../../../api/axios";
 import Card from "../../../ui/Card";
 import Badge from "../../../ui/Badge";
@@ -58,7 +59,11 @@ function DonorHome() {
 
         <Card title="Donation Eligibility">
           <p className="muted">Last donation date</p>
-          {lastDate ? <p style={{ marginTop: 6, fontWeight: 700 }}>{lastDate}</p> : <EmptyState text="No donations yet" />}
+          {lastDate ? <p style={{ marginTop: 6, fontWeight: 700 }}>{formatDate(lastDate)}</p> : <EmptyState text="No donations yet" />}
+          <div style={{ marginTop: 8 }}>
+            <div className="muted">Member Since</div>
+            <div style={{ fontFamily: 'monospace', fontWeight: 700 }}>{formatDate(profile?.created_dt || profile?.created_at)}</div>
+          </div>
           <div style={{ marginTop: 10 }}>
             <Badge status={eligible ? "Approved" : "Rejected"} />
             <span className="muted" style={{ marginLeft: 10 }}>

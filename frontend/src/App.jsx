@@ -39,6 +39,9 @@ import AdminDonations from "./pages/dashboard/admin/AdminDonations";
 import AdminRequests from "./pages/dashboard/admin/AdminRequests";
 import AdminStock from "./pages/dashboard/admin/AdminStock";
 import AdminIssued from "./pages/dashboard/admin/AdminIssued";
+import AdminAuditLogs from "./pages/dashboard/admin/AdminAuditLogs";
+import AdminProfile from "./pages/dashboard/admin/AdminProfile";
+import Landing from "./pages/Landing";
 
 function App() {
   const RootRedirect = () => {
@@ -51,7 +54,9 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<RootRedirect />} />
+        <Route path="/" element={<Landing />} />
+
+        <Route path="/home" element={<RootRedirect />} />
 
         {/* 🔓 PUBLIC */}
         <Route path="/login" element={<Login />} />
@@ -79,11 +84,13 @@ function App() {
             {/* 🛡️ ADMIN */}
             <Route element={<RoleProtectedRoute allowedRoles={["admin"]} />}>
               <Route path="/dashboard/admin" element={<AdminDashboard />} />
+              <Route path="/dashboard/admin/profile" element={<AdminProfile />} />
               <Route path="/dashboard/admin/users" element={<AdminUsers />} />
               <Route path="/dashboard/admin/donations" element={<AdminDonations />} />
               <Route path="/dashboard/admin/requests" element={<AdminRequests />} />
               <Route path="/dashboard/admin/stock" element={<AdminStock />} />
               <Route path="/dashboard/admin/issued" element={<AdminIssued />} />
+              <Route path="/dashboard/admin/audit-logs" element={<AdminAuditLogs />} />
             </Route>
 
             {/* 🧑 DONOR */}

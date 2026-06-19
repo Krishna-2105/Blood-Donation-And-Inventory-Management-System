@@ -18,11 +18,13 @@ function Sidebar() {
             {role === "admin" && (
                 <>
                     <NavLink to="/dashboard/admin" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Dashboard</NavLink>
+                    <NavLink to="/dashboard/admin/profile" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Profile</NavLink>
                     <NavLink to="/dashboard/admin/users" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Users</NavLink>
                     <NavLink to="/dashboard/admin/donations" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Donations</NavLink>
                     <NavLink to="/dashboard/admin/requests" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Requests</NavLink>
                     <NavLink to="/dashboard/admin/stock" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Stock</NavLink>
                     <NavLink to="/dashboard/admin/issued" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Issued</NavLink>
+                    <NavLink to="/dashboard/admin/audit-logs" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Audit Logs</NavLink>
                 </>
             )}
 
