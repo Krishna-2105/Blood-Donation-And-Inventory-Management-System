@@ -109,3 +109,15 @@ CREATE TABLE Blood_issued_to_hospital (
     FOREIGN KEY (bank_id) REFERENCES Blood_Bank(bank_id) ON DELETE RESTRICT,
     FOREIGN KEY (request_id) REFERENCES Blood_Request_from_hospital(request_id) ON DELETE RESTRICT
 );
+
+-- 10. Audit Logs (admin actions)
+CREATE TABLE IF NOT EXISTS audit_logs (
+  audit_log_id INT AUTO_INCREMENT PRIMARY KEY,
+  admin_user_id VARCHAR(64) NOT NULL,
+  action_type VARCHAR(64) NOT NULL,
+  entity_type VARCHAR(64) NOT NULL,
+  entity_id VARCHAR(128),
+  previous_values TEXT,
+  new_values TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
