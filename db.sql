@@ -111,7 +111,7 @@ CREATE TABLE Blood_issued_to_hospital (
 );
 
 -- 10. Audit Logs (admin actions)
-CREATE TABLE IF NOT EXISTS audit_logs (
+CREATE TABLE audit_logs (
   audit_log_id INT AUTO_INCREMENT PRIMARY KEY,
   admin_user_id VARCHAR(64) NOT NULL,
   action_type VARCHAR(64) NOT NULL,
@@ -120,4 +120,4 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   previous_values TEXT,
   new_values TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+);
