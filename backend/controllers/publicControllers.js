@@ -19,4 +19,23 @@ const getPublicStats = async (req, res) => {
   }
 };
 
-module.exports = { getPublicStats };
+const getPublicBanks = async (req, res) => {
+  try {
+    const [rows] = await db.promise().query(
+      `SELECT bs.bank_id, u.name AS bank_name, SUM(bs.units_available) AS units_available, ol.latitude, ol.longitude
+       FROM Blood_Stock bs
+       JOIN \`User\` u ON bs.bank_id = u.user_id
+       LEFT JOIN Organization_Location ol ON ol.organisation_id = bs.bank_id
+       WHERE bs.expiry_date >= CURDATE()
+        GROUP BY bs.bank_id, u.name, ol.latitude, ol.longitude
+        HAVING SUM(bs.units_available) > 0
+        ORDER BY u.name ASC`
+    );
+    return res.json({ success: true, banks: rows });
+  } catch (err) {
+    console.log('GET BANKS ERR', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+module.exports = { getPublicStats, getPublicBanks };

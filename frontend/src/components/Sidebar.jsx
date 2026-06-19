@@ -25,6 +25,7 @@ function Sidebar() {
                     <NavLink to="/dashboard/admin/stock" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Stock</NavLink>
                     <NavLink to="/dashboard/admin/issued" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Issued</NavLink>
                     <NavLink to="/dashboard/admin/audit-logs" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Audit Logs</NavLink>
+                    <NavLink to="/dashboard/admin/appointments" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Appointments</NavLink>
                 </>
             )}
 
@@ -33,6 +34,8 @@ function Sidebar() {
                 <>
                     <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Home</NavLink>
                     <NavLink to="/dashboard/history" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>History</NavLink>
+                    <NavLink to="/dashboard/book-appointment" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Book Appointment</NavLink>
+                    <NavLink to="/dashboard/my-appointments" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>My Appointments</NavLink>
                 </>
             )}
 
@@ -46,6 +49,7 @@ function Sidebar() {
                     <NavLink to="/dashboard/add-donation" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
                         Add Donation
                     </NavLink>
+                    <NavLink to="/dashboard/appointments" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>Appointments</NavLink>
                 </>
             )}
 

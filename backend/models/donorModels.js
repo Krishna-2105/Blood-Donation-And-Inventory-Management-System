@@ -24,8 +24,22 @@ const getLastDonation = async (donorId) => {
 
     return rows[0]; 
 };
+
+const getDonorEligibility = async (donorId) => {
+    const last = await getLastDonation(donorId);
+    if (!last || !last.donation_date) {
+        return { eligible: true, nextEligibleDate: null };
+    }
+    const lastDate = new Date(last.donation_date);
+    const nextDate = new Date(lastDate);
+    nextDate.setDate(nextDate.getDate() + 90);
+    const today = new Date();
+    const diff = (nextDate - today) / (1000 * 60 * 60 * 24);
+    if (diff > 0) {
+        return { eligible: false, nextEligibleDate: nextDate.toISOString().slice(0,10), days_left: Math.ceil(diff) };
+    }
+    return { eligible: true, nextEligibleDate: nextDate.toISOString().slice(0,10) };
+}
 module.exports={
-    getDonorDetails,getHistory,getLastDonation
+    getDonorDetails,getHistory,getLastDonation,getDonorEligibility
 };
-
-

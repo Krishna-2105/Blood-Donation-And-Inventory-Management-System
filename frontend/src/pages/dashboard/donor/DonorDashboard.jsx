@@ -7,7 +7,7 @@ function DonorDashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const last = await API.get("/donor/last");
+      const last = await API.get("/donor/lastdt");
       const hist = await API.get("/donor/history");
 
       setLastDonation(last.data);

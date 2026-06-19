@@ -57,6 +57,8 @@ const loginUser = async (req, res) => {
       );
       profile_complete = rows.length > 0;
       has_blood_bank = true;
+      // for blood_bank users, bank_id is the same as user_id
+      bank_id = user.user_id;
     }
 
     if (user_type === "admin") {

@@ -51,7 +51,7 @@ The **Blood Donation Management System (BDMS)** is a full-stack web application 
 
 ### 🧑 Donor
 - Profile setup with blood group and date of birth
-- **Donation eligibility check** — enforces a 42-day cooldown between donations
+- **Donation eligibility check** — enforces a 90-day cooldown between donations
 - Full donation history with dates and units donated
 
 ### 🏦 Blood Bank

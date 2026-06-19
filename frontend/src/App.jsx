@@ -2,8 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import ResetPassword from "./pages/auth/ResetPassword";
+// ForgotPassword component removed; import kept commented for reuse
+// import ForgotPassword from "./pages/auth/ForgotPassword";
+// ResetPassword component removed; import kept commented for reuse
+// import ResetPassword from "./pages/auth/ResetPassword";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import DashboardLayout from "./pages/Layouts/DashboardLayout";
@@ -19,6 +21,8 @@ import BloodBankSetup from "./pages/setup/BloodBankSetup";
 // donor
 import DonorProfile from "./pages/dashboard/donor/DonorProfile";
 import DonorHistory from "./pages/dashboard/donor/DonorHistory";
+import BookAppointment from "./pages/dashboard/donor/BookAppointment";
+import DonorAppointments from "./pages/dashboard/donor/DonorAppointments";
 
 // hospital
 import HospitalRequest from "./pages/dashboard/hospital/HospitalRequest";
@@ -32,6 +36,7 @@ import Requests from "./pages/dashboard/bloodbank/Requests";
 import Donations from "./pages/dashboard/bloodbank/Donations";
 import AddDonation from "./pages/dashboard/bloodbank/AddDonation";
 import OwnedBankInventory from "./pages/dashboard/bloodbank/OwnedBankInventory";
+import BankAppointments from "./pages/dashboard/bloodbank/BankAppointments";
 import UserProfile from "./pages/dashboard/UserProfile";
 import AdminDashboard from "./pages/dashboard/admin/AdminDashboard";
 import AdminUsers from "./pages/dashboard/admin/AdminUsers";
@@ -41,7 +46,9 @@ import AdminStock from "./pages/dashboard/admin/AdminStock";
 import AdminIssued from "./pages/dashboard/admin/AdminIssued";
 import AdminAuditLogs from "./pages/dashboard/admin/AdminAuditLogs";
 import AdminProfile from "./pages/dashboard/admin/AdminProfile";
+import AdminAppointments from "./pages/dashboard/admin/AdminAppointments";
 import Landing from "./pages/Landing";
+import NearbyBanks from "./pages/public/NearbyBanks";
 
 function App() {
   const RootRedirect = () => {
@@ -61,8 +68,9 @@ function App() {
         {/* 🔓 PUBLIC */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        {/* Forgot/reset-password pages removed (commented out) */}
+        {/* <Route path="/forgot-password" element={<ForgotPassword />} /> */}
+        {/* <Route path="/reset-password" element={<ResetPassword />} /> */}
 
         {/* 🔐 PROTECTED */}
         <Route element={<ProtectedRoute />}>
@@ -82,21 +90,24 @@ function App() {
             <Route path="/dashboard/profile" element={<UserProfile />} />
 
             {/* 🛡️ ADMIN */}
-            <Route element={<RoleProtectedRoute allowedRoles={["admin"]} />}>
-              <Route path="/dashboard/admin" element={<AdminDashboard />} />
-              <Route path="/dashboard/admin/profile" element={<AdminProfile />} />
-              <Route path="/dashboard/admin/users" element={<AdminUsers />} />
-              <Route path="/dashboard/admin/donations" element={<AdminDonations />} />
-              <Route path="/dashboard/admin/requests" element={<AdminRequests />} />
-              <Route path="/dashboard/admin/stock" element={<AdminStock />} />
-              <Route path="/dashboard/admin/issued" element={<AdminIssued />} />
-              <Route path="/dashboard/admin/audit-logs" element={<AdminAuditLogs />} />
-            </Route>
+              <Route element={<RoleProtectedRoute allowedRoles={["admin"]} />}>
+                <Route path="/dashboard/admin" element={<AdminDashboard />} />
+                <Route path="/dashboard/admin/profile" element={<AdminProfile />} />
+                <Route path="/dashboard/admin/users" element={<AdminUsers />} />
+                <Route path="/dashboard/admin/donations" element={<AdminDonations />} />
+                <Route path="/dashboard/admin/requests" element={<AdminRequests />} />
+                <Route path="/dashboard/admin/stock" element={<AdminStock />} />
+                <Route path="/dashboard/admin/issued" element={<AdminIssued />} />
+                <Route path="/dashboard/admin/audit-logs" element={<AdminAuditLogs />} />
+                <Route path="/dashboard/admin/appointments" element={<AdminAppointments />} />
+              </Route>
 
             {/* 🧑 DONOR */}
-            <Route element={<RoleProtectedRoute allowedRoles={["donor"]} />}>
+              <Route element={<RoleProtectedRoute allowedRoles={["donor"]} />}>
               <Route path="/dashboard/history" element={<DonorHistory />} />
-            </Route>
+              <Route path="/dashboard/book-appointment" element={<BookAppointment />} />
+              <Route path="/dashboard/my-appointments" element={<DonorAppointments />} />
+              </Route>
 
             {/* 🏥 HOSPITAL */}
             <Route element={<RoleProtectedRoute allowedRoles={["hospital"]} />}>
@@ -106,19 +117,20 @@ function App() {
             </Route>
 
             {/* 🩸 BLOOD BANK */}
-            <Route
-              element={
-                <RoleProtectedRoute
-                  allowedRoles={["blood_bank"]}
-                  requireBank={true}
-                />
-              }
-            >
-              <Route path="/dashboard/inventory" element={<BloodInventory />} />
-              <Route path="/dashboard/requests" element={<Requests />} />
-              <Route path="/dashboard/donations" element={<Donations />} />
-              <Route path="/dashboard/add-donation" element={<AddDonation />} />
-            </Route>
+              <Route
+                element={
+                  <RoleProtectedRoute
+                    allowedRoles={["blood_bank"]}
+                    requireBank={true}
+                  />
+                }
+              >
+                <Route path="/dashboard/inventory" element={<BloodInventory />} />
+                <Route path="/dashboard/requests" element={<Requests />} />
+                <Route path="/dashboard/donations" element={<Donations />} />
+                <Route path="/dashboard/add-donation" element={<AddDonation />} />
+                <Route path="/dashboard/appointments" element={<BankAppointments />} />
+              </Route>
 
             {/* 🏥 HOSPITAL WITH OWNED BANK */}
             <Route element={<RoleProtectedRoute allowedRoles={["hospital"]} requireBank={true} />}>
@@ -131,6 +143,8 @@ function App() {
 
         {/* Fallback */}
         <Route path="*" element={<RootRedirect />} />
+        {/* Public Nearby Banks */}
+        <Route path="/nearby-banks" element={<NearbyBanks />} />
       </Routes>
     </BrowserRouter>
   );

@@ -243,6 +243,7 @@ const getAdminStock = async (req, res) => {
         SUM(bs.units_available) AS units
        FROM Blood_Stock bs
        JOIN \`User\` bu ON bs.bank_id = bu.user_id
+       WHERE bs.expiry_date >= CURDATE()
        GROUP BY bs.bank_id, bu.name, bs.blood_grp
        ORDER BY bu.name ASC, bs.blood_grp ASC`
     );

@@ -8,6 +8,7 @@ import EmptyState from "../../../ui/EmptyState";
 function DonorHome() {
   const [profile, setProfile] = useState(null);
   const [lastDonation, setLastDonation] = useState(null);
+  const [eligibility, setEligibility] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,6 +23,8 @@ function DonorHome() {
       try {
         const last = await API.get("/donor/lastdt");
         setLastDonation(last.data);
+        const elig = await API.get('/donor/eligibility');
+        setEligibility(elig.data);
       } catch (err) {
         if (err.response?.status === 404) {
           setLastDonation({ lastDonation: null });
@@ -45,7 +48,7 @@ function DonorHome() {
   if (!profile) return <p>Loading...</p>;
 
   const lastDate = lastDonation?.lastDonation?.donation_date || null;
-  const eligible = canDonate(lastDate);
+  const eligible = eligibility ? eligibility.eligible : canDonate(lastDate);
 
   return (
     <div>
@@ -60,6 +63,20 @@ function DonorHome() {
         <Card title="Donation Eligibility">
           <p className="muted">Last donation date</p>
           {lastDate ? <p style={{ marginTop: 6, fontWeight: 700 }}>{formatDate(lastDate)}</p> : <EmptyState text="No donations yet" />}
+          {eligibility && (
+            <div style={{ marginTop: 8 }}>
+              {eligibility.eligible ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <strong>Eligible to Donate</strong>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <strong>Eligible after {eligibility.days_left} days</strong>
+                  <span className="muted">({eligibility.nextEligibleDate})</span>
+                </div>
+              )}
+            </div>
+          )}
           <div style={{ marginTop: 8 }}>
             <div className="muted">Member Since</div>
             <div style={{ fontFamily: 'monospace', fontWeight: 700 }}>{formatDate(profile?.created_dt || profile?.created_at)}</div>

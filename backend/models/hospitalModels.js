@@ -16,23 +16,23 @@ const searchBanks = async (hospital_id, latitude, longitude, blood_grp, units_re
       bs.bank_id,
       u.name AS bank_name,
       SUM(bs.units_available) AS units_available,
-      (6371 * ACOS(
-        COS(RADIANS(?)) * COS(RADIANS(ol.latitude)) *
-        COS(RADIANS(ol.longitude) - RADIANS(?)) +
-        SIN(RADIANS(?)) * SIN(RADIANS(ol.latitude))
-      )) AS distance
+    (6371 * 2 * ASIN(SQRT(
+        POWER(SIN(RADIANS(ol.latitude - ?)/2), 2) +
+        COS(RADIANS(?)) * COS(RADIANS(ol.latitude)) * POWER(SIN(RADIANS(ol.longitude - ?)/2), 2)
+      ))) AS distance
     FROM Blood_Stock bs
     JOIN User u ON bs.bank_id = u.user_id
     JOIN Organization_Location ol ON bs.bank_id = ol.organisation_id
     LEFT JOIN Owns own ON own.bank_id = bs.bank_id AND own.hospital_id = ?
     WHERE bs.blood_grp = ?
       AND u.user_type = 'blood_bank'
+      AND bs.expiry_date >= CURDATE()
       AND own.bank_id IS NULL
     GROUP BY bs.bank_id, u.name, ol.latitude, ol.longitude
     HAVING SUM(bs.units_available) >= ?
     ORDER BY distance ASC
     `,
-    [latitude, longitude, latitude, hospital_id, blood_grp, units_required]
+    [latitude, latitude, longitude, hospital_id, blood_grp, units_required]
   );
   return rows;
 };
