@@ -1,7 +1,14 @@
-CREATE DATABASE BDMS;
-USE BDMS;
+-- ============================================================================
+-- DATABASE INITIALIZATION
+-- ============================================================================
+CREATE DATABASE Blood_Donation_Management_System;
+USE Blood_Donation_Management_System;
 
--- 1. Main User Table
+-- ============================================================================
+-- 1. MAIN USER & PROFILE TABLES
+-- ============================================================================
+
+-- Main User Table
 CREATE TABLE User (
     user_id CHAR(10) PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -18,7 +25,7 @@ CREATE TABLE User (
     )
 );
 
--- 2. Profiles
+-- Profiles
 CREATE TABLE Donor (
     donor_id CHAR(10) PRIMARY KEY,
     blood_grp ENUM('A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-') NOT NULL,
@@ -36,15 +43,16 @@ CREATE TABLE Blood_Bank (
     FOREIGN KEY (bank_id) REFERENCES User(user_id) ON DELETE RESTRICT
 );
 
--- 3. Organization Location
+-- Organization Location (Updated with address)
 CREATE TABLE Organization_Location (
     organisation_id CHAR(10) PRIMARY KEY,
-    latitude DECIMAL(9,6),
-    longitude DECIMAL(9,6),
+    latitude DECIMAL(9,6) NULL,
+    longitude DECIMAL(9,6) NULL,
+    address TEXT NULL,
     FOREIGN KEY (organisation_id) REFERENCES User(user_id) ON DELETE RESTRICT
 );
 
--- 4. Ownership Relation
+-- Ownership Relation
 CREATE TABLE Owns (
     hospital_id CHAR(10),
     bank_id CHAR(10),
@@ -53,7 +61,11 @@ CREATE TABLE Owns (
     FOREIGN KEY (bank_id) REFERENCES Blood_Bank(bank_id) ON DELETE RESTRICT
 );
 
--- 5. Donation Table
+-- ============================================================================
+-- 2. TRANSACTIONS, STOCK & OPERATIONS
+-- ============================================================================
+
+-- Donation Table
 CREATE TABLE Donation (
     donation_id INT AUTO_INCREMENT PRIMARY KEY,
     donor_id CHAR(10),
@@ -64,21 +76,25 @@ CREATE TABLE Donation (
     FOREIGN KEY (bank_id) REFERENCES Blood_Bank(bank_id) ON DELETE RESTRICT
 );
 
--- 6. Blood Stock
+-- Blood Stock (Updated with v2/v5 additions, collection_dt omitted)
 CREATE TABLE Blood_Stock (
     bank_id CHAR(10),
     stock_id INT,
     blood_grp ENUM('A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'),
     units_available INT DEFAULT 0 CHECK (units_available >= 0),
     donation_id INT UNIQUE,
+    expiry_date DATE NOT NULL,
     PRIMARY KEY (bank_id, stock_id),
     FOREIGN KEY (bank_id) REFERENCES Blood_Bank(bank_id) ON DELETE RESTRICT,
     FOREIGN KEY (donation_id) REFERENCES Donation(donation_id) ON DELETE RESTRICT
 );
 
--- 7. Hospital Blood Request
+-- Index for expiry lookups
+CREATE INDEX idx_blood_stock_expiry ON Blood_Stock(expiry_date);
+
+-- Hospital Blood Request (Updated with CHAR(36) UUID format)
 CREATE TABLE Blood_Request_from_hospital (
-    request_id VARCHAR(36) PRIMARY KEY,
+    request_id CHAR(36) PRIMARY KEY,
     hospital_id CHAR(10),
     final_status ENUM('Approved','Processing','Rejected','Cancelled') DEFAULT 'Processing',
     requested_date DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -88,9 +104,9 @@ CREATE TABLE Blood_Request_from_hospital (
     FOREIGN KEY (hospital_id) REFERENCES Hospital(hospital_id) ON DELETE RESTRICT
 );
 
--- 8. Requests Sent to Blood Banks
+-- Requests Sent to Blood Banks (Updated with CHAR(36) UUID format)
 CREATE TABLE Requests_sent_to_BloodBanks (
-    request_id VARCHAR(36),
+    request_id CHAR(36),
     bank_id CHAR(10),
     request_status ENUM('Approved','Processing','Rejected','Cancelled') DEFAULT 'Processing',
     PRIMARY KEY (request_id, bank_id),
@@ -98,26 +114,58 @@ CREATE TABLE Requests_sent_to_BloodBanks (
     FOREIGN KEY (bank_id) REFERENCES Blood_Bank(bank_id) ON DELETE RESTRICT
 );
 
--- 9. Blood Issued to Hospital
+-- Blood Issued to Hospital (Updated with CHAR(36) UUID format)
 CREATE TABLE Blood_issued_to_hospital (
-    issued_id VARCHAR(36) PRIMARY KEY,
+    issued_id CHAR(36) PRIMARY KEY,
     bank_id CHAR(10),
     blood_grp ENUM('A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'),
     units_issued INT CHECK (units_issued > 0),
     issued_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    request_id VARCHAR(36) UNIQUE,
+    request_id CHAR(36) UNIQUE,
     FOREIGN KEY (bank_id) REFERENCES Blood_Bank(bank_id) ON DELETE RESTRICT,
     FOREIGN KEY (request_id) REFERENCES Blood_Request_from_hospital(request_id) ON DELETE RESTRICT
 );
 
--- 10. Audit Logs (admin actions)
+-- Donation Appointment Table
+CREATE TABLE Donation_Appointment (
+    appointment_id INT AUTO_INCREMENT PRIMARY KEY,
+    donor_id CHAR(10) NOT NULL,
+    bank_id CHAR(10) NOT NULL,
+    appointment_date DATE NOT NULL,
+    appointment_time TIME NOT NULL,
+    status ENUM('Pending','Approved','Rejected','Completed','Cancelled') DEFAULT 'Pending',
+    remarks TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (donor_id) REFERENCES Donor(donor_id) ON DELETE CASCADE,
+    FOREIGN KEY (bank_id) REFERENCES Blood_Bank(bank_id) ON DELETE CASCADE
+);
+
+-- ============================================================================
+-- 3. SYSTEM MANAGEMENT, AUDITS & NOTIFICATIONS
+-- ============================================================================
+
+-- Audit Logs
 CREATE TABLE audit_logs (
-  audit_log_id INT AUTO_INCREMENT PRIMARY KEY,
-  admin_user_id VARCHAR(64) NOT NULL,
-  action_type VARCHAR(64) NOT NULL,
-  entity_type VARCHAR(64) NOT NULL,
-  entity_id VARCHAR(128),
-  previous_values TEXT,
-  new_values TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    audit_log_id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_user_id VARCHAR(64) NOT NULL,
+    action_type VARCHAR(64) NOT NULL,
+    entity_type VARCHAR(64) NOT NULL,
+    entity_id VARCHAR(128),
+    previous_values TEXT,
+    new_values TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Notifications
+CREATE TABLE Notification (
+    notification_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id CHAR(10) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT,
+    type ENUM('REQUEST','DONATION','APPOINTMENT','INVENTORY','SYSTEM') NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_user_read (user_id, is_read),
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE
 );

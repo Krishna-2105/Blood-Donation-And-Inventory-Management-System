@@ -14,6 +14,14 @@ const {
   writeOffStock
 } = require("../models/bloodBankModels");
 const db = require("../config/db");
+const {
+  notifyRequestApproved,
+  notifyRequestRejected,
+  notifyBloodIssued,
+  notifyLargeTransactionToAdmins,
+  checkLowStockAndNotify,
+} = require("../services/notificationService");
+const { LARGE_TRANSACTION_THRESHOLD } = require("../config/bloodConfig");
 
 const checkDonorRoute = async (req, res) => {
   try {
@@ -111,6 +119,12 @@ const blood_grp = req.body.blood_grp;
 
     await connection.commit();
 
+    try {
+      await checkLowStockAndNotify(bank_id);
+    } catch (e) {
+      console.log("NOTIFICATION ERR:", e);
+    }
+
     return res.status(201).json({
       message: "Donation successful",
       success: true,
@@ -202,6 +216,17 @@ const fulfillRequestRoute = async (req, res) => {
       return res.status(400).json(result);
     }
     await conn.commit();
+
+    try {
+      await notifyRequestApproved(result.hospital_id, request_id, bank_id);
+      await notifyBloodIssued(result.hospital_id, request_id, result.issued_id, result.units_required);
+      if (Number(result.units_required) >= LARGE_TRANSACTION_THRESHOLD) {
+        await notifyLargeTransactionToAdmins(result.hospital_id, request_id, result.units_required);
+      }
+    } catch (e) {
+      console.log("NOTIFICATION ERR:", e);
+    }
+
     return res.json({
       ...result,
       notification: {
@@ -230,6 +255,13 @@ const rejectRequestRoute = async (req, res) => {
       return res.status(400).json(result);
     }
     await conn.commit();
+
+    try {
+      await notifyRequestRejected(result.hospital_id, request_id, bank_id);
+    } catch (e) {
+      console.log("NOTIFICATION ERR:", e);
+    }
+
     return res.json({
       ...result,
       notification: {

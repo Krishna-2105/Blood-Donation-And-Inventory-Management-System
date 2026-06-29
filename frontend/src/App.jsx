@@ -47,6 +47,7 @@ import AdminIssued from "./pages/dashboard/admin/AdminIssued";
 import AdminAuditLogs from "./pages/dashboard/admin/AdminAuditLogs";
 import AdminProfile from "./pages/dashboard/admin/AdminProfile";
 import AdminAppointments from "./pages/dashboard/admin/AdminAppointments";
+import Notifications from "./pages/dashboard/Notifications";
 import Landing from "./pages/Landing";
 import NearbyBanks from "./pages/public/NearbyBanks";
 
@@ -80,14 +81,17 @@ function App() {
           <Route path="/setup/hospital" element={<HospitalSetup />} />
           <Route path="/setup/bloodbank" element={<BloodBankSetup />} />
 
-          {/* 🧭 DASHBOARD LAYOUT */}
-          <Route element={<DashboardLayout />}>
+            {/* 🧭 DASHBOARD LAYOUT */}
+            <Route element={<DashboardLayout />}>
 
-            {/* 🏠 MAIN ENTRY (ALL USERS) */}
-            <Route path="/dashboard" element={<DashboardRouter />} />
+              {/* 🏠 MAIN ENTRY (ALL USERS) */}
+              <Route path="/dashboard" element={<DashboardRouter />} />
 
-            {/* ✅ PROFILE (ALL USERS) */}
-            <Route path="/dashboard/profile" element={<UserProfile />} />
+              {/* ✅ PROFILE (ALL USERS) */}
+              <Route path="/dashboard/profile" element={<UserProfile />} />
+
+              {/* 🔔 NOTIFICATIONS (ALL USERS) */}
+              <Route path="/dashboard/notifications" element={<Notifications />} />
 
             {/* 🛡️ ADMIN */}
               <Route element={<RoleProtectedRoute allowedRoles={["admin"]} />}>

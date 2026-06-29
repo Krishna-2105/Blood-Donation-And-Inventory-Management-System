@@ -1,4 +1,5 @@
 const { createUser } = require("../models/userModels");
+const { notifyNewRegistrationToAdmins } = require("../services/notificationService");
 
 const signupUser = async (req, res) => {
   try {
@@ -23,6 +24,9 @@ const signupUser = async (req, res) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
     if (!allowedUserTypes.includes(user_type)) {
       return res.status(400).json({ message: "Invalid user type" });
     }
@@ -43,6 +47,12 @@ const signupUser = async (req, res) => {
     // server generates ids; enforce prefix correctness
     if (user_type === "admin" && !created.user_id.startsWith("ADM")) {
       return res.status(400).json({ message: "Admin ID must start with ADM" });
+    }
+
+    try {
+      await notifyNewRegistrationToAdmins(created.user_id, user_type);
+    } catch (e) {
+      console.log("NOTIFICATION ERR:", e);
     }
 
     res.status(201).json({

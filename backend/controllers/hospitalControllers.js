@@ -12,6 +12,7 @@ const {
 } = require("../models/hospitalModels");
 const { v4: uuidv4 } = require("uuid");
 const db = require("../config/db");
+const { notifyNewRequestToBank } = require("../services/notificationService");
 
 
 // SEARCH BANKS
@@ -81,6 +82,14 @@ const sendRequestRoute = async (req, res) => {
         }
         await conn.commit();
         conn.release();
+
+        try {
+          for (const bank_id of selected_banks) {
+            await notifyNewRequestToBank(bank_id, request_id, hospital_id);
+          }
+        } catch (e) {
+          console.log("NOTIFICATION ERR:", e);
+        }
 
         return res.status(200).json({
             message: "Request sent successfully",

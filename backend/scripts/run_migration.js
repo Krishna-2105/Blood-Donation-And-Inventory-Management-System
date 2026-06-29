@@ -3,7 +3,8 @@ const path = require('path');
 const mysql = require('mysql2/promise');
 
 async function run() {
-  const file = path.join(__dirname, '..', 'migrations', 'v3_appointments.sql');
+  const migrationFile = process.argv[2] || 'v3_appointments.sql';
+  const file = path.join(__dirname, '..', 'migrations', migrationFile);
   if (!fs.existsSync(file)) {
     console.error('Migration file not found:', file);
     process.exit(1);

@@ -1,10 +1,16 @@
 const db = require('../config/db');
 const {
+  notifyAppointmentBookedToBank,
+  notifyAppointmentApproved,
+  notifyAppointmentRejected,
+} = require("../services/notificationService");
+const {
   createAppointment,
   getDonorAppointments,
   getBankAppointments,
   getAllAppointments,
   getAppointmentById,
+  getDonorAppointmentOnDate,
   updateAppointmentStatus,
   cancelAppointment
 } = require('../models/appointmentModels');
@@ -16,11 +22,48 @@ const createAppointmentRoute = async (req, res) => {
     const donor_id = req.user.user_id;
     const { bank_id, appointment_date, appointment_time, remarks } = req.body || {};
     if (!bank_id || !appointment_date || !appointment_time) return res.status(400).json({ success: false, message: 'Missing required fields' });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDate = new Date(appointment_date + 'T00:00:00');
+
+    if (isNaN(selectedDate.getTime())) {
+      return res.status(400).json({ success: false, message: 'Invalid date format. Use YYYY-MM-DD.' });
+    }
+
+    if (selectedDate < today) {
+      return res.status(400).json({ success: false, message: 'Cannot book an appointment for a past date.' });
+    }
+
+    const minDate = new Date(today);
+    minDate.setDate(minDate.getDate() + 2);
+    if (selectedDate < minDate) {
+      return res.status(400).json({ success: false, message: 'Appointments must be booked at least 2 days in advance.' });
+    }
+
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 30);
+    if (selectedDate > maxDate) {
+      return res.status(400).json({ success: false, message: 'Appointments can only be booked up to 30 days in advance.' });
+    }
+
+    const existing = await getDonorAppointmentOnDate(donor_id, appointment_date);
+    if (existing) {
+      return res.status(409).json({ success: false, message: 'You already have an appointment on this date. Please choose another date.' });
+    }
+
     conn = await db.promise().getConnection();
     await conn.beginTransaction();
     const id = await createAppointment(conn, { donor_id, bank_id, appointment_date, appointment_time, remarks });
     await conn.commit();
     conn.release();
+
+    try {
+      await notifyAppointmentBookedToBank(bank_id, donor_id, id);
+    } catch (e) {
+      console.log("NOTIFICATION ERR:", e);
+    }
+
     return res.status(201).json({ success: true, appointment_id: id, message: 'Appointment created' });
   } catch (err) {
     if (conn) { await conn.rollback(); conn.release(); }
@@ -93,6 +136,17 @@ const updateAppointmentStatusRoute = async (req, res) => {
     const ok = await updateAppointmentStatus(conn, appointment_id, status, remarks || appt.remarks);
     if (!ok) { await conn.rollback(); conn.release(); return res.status(400).json({ success: false, message: 'Failed to update status' }); }
     await conn.commit(); conn.release();
+
+    try {
+      if (status === 'Approved') {
+        await notifyAppointmentApproved(appt.donor_id, appointment_id);
+      } else if (status === 'Rejected') {
+        await notifyAppointmentRejected(appt.donor_id, appointment_id);
+      }
+    } catch (e) {
+      console.log("NOTIFICATION ERR:", e);
+    }
+
     return res.json({ success: true, message: 'Status updated' });
   } catch (err) {
     if (conn) { await conn.rollback(); conn.release(); }

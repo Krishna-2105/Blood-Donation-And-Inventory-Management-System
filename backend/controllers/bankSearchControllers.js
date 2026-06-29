@@ -23,10 +23,11 @@ const nearbyBanks = async (req, res) => {
           COS(RADIANS(?)) * COS(RADIANS(ol.latitude)) * POWER(SIN(RADIANS(ol.longitude - ?)/2), 2)
         ))) AS distance
       FROM Blood_Stock bs
+      JOIN Donation d ON bs.donation_id = d.donation_id
       JOIN ` + "`User`" + ` u ON bs.bank_id = u.user_id
       LEFT JOIN Organization_Location ol ON ol.organisation_id = bs.bank_id
       WHERE ol.latitude IS NOT NULL AND ol.longitude IS NOT NULL
-        AND bs.expiry_date >= CURDATE()
+        AND DATE_ADD(d.donation_date, INTERVAL 42 DAY) >= CURDATE()
       GROUP BY u.user_id, u.name, ol.address, ol.latitude, ol.longitude
       HAVING distance <= ?
       ORDER BY distance ASC

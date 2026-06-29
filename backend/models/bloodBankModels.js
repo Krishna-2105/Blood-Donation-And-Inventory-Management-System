@@ -93,8 +93,8 @@ const insertBloodStockWithLock = async (
   await conn.query(
     `
     INSERT INTO Blood_Stock
-    (stock_id, bank_id, blood_grp, units_available, donation_id, expiry_date)
-    VALUES (?, ?, ?, ?, ?, DATE_ADD(CURDATE(), INTERVAL 42 DAY))
+    (stock_id, bank_id, blood_grp, units_available, donation_id)
+    VALUES (?, ?, ?, ?, ?)
     `,
     [nextStockId, bank_id, blood_grp, units_available, donation_id]
   );
@@ -113,9 +113,10 @@ const getDashboardData = async (bank_id) => {
 
   // total units
   const [total] = await conn.query(
-    `SELECT SUM(units_available) AS total_units
-     FROM Blood_Stock
-     WHERE bank_id = ? AND expiry_date >= CURDATE()`,
+    `SELECT SUM(bs.units_available) AS total_units
+     FROM Blood_Stock bs
+     JOIN Donation d ON bs.donation_id = d.donation_id
+     WHERE bs.bank_id = ? AND DATE_ADD(d.donation_date, INTERVAL 42 DAY) >= CURDATE()`,
     [bank_id]
   );
 
@@ -138,10 +139,11 @@ const getDashboardData = async (bank_id) => {
 
   // low stock
   const [low] = await conn.query(
-    `SELECT blood_grp, SUM(units_available) AS units
-     FROM Blood_Stock
-     WHERE bank_id = ? AND expiry_date >= CURDATE()
-     GROUP BY blood_grp
+    `SELECT bs.blood_grp, SUM(bs.units_available) AS units
+     FROM Blood_Stock bs
+     JOIN Donation d ON bs.donation_id = d.donation_id
+     WHERE bs.bank_id = ? AND DATE_ADD(d.donation_date, INTERVAL 42 DAY) >= CURDATE()
+     GROUP BY bs.blood_grp
      HAVING units <= 5`,
     [bank_id]
   );
@@ -161,11 +163,12 @@ const getInventoryData = async (bank_id) => {
   const conn = db.promise();
 
   const [summary] = await conn.query(
-    `SELECT blood_grp, SUM(units_available) AS units
-     FROM Blood_Stock
-     WHERE bank_id = ? AND expiry_date >= CURDATE()
-     GROUP BY blood_grp
-     ORDER BY blood_grp`,
+    `SELECT bs.blood_grp, SUM(bs.units_available) AS units
+     FROM Blood_Stock bs
+     JOIN Donation d ON bs.donation_id = d.donation_id
+     WHERE bs.bank_id = ? AND DATE_ADD(d.donation_date, INTERVAL 42 DAY) >= CURDATE()
+     GROUP BY bs.blood_grp
+     ORDER BY bs.blood_grp`,
     [bank_id]
   );
   const [entries] = await conn.query(
@@ -174,7 +177,7 @@ const getInventoryData = async (bank_id) => {
             bs.blood_grp,
             bs.units_available,
             d.donation_date AS collection_dt,
-            bs.expiry_date,
+            DATE_ADD(d.donation_date, INTERVAL 42 DAY) AS expiry_date,
             d.donor_id
      FROM Blood_Stock bs
      LEFT JOIN Donation d ON d.donation_id = bs.donation_id
@@ -253,10 +256,12 @@ const fulfillRequest = async (conn, {request_id, bank_id}) => {
   }
 
   const [stockRows] = await conn.query(
-    `SELECT bs.stock_id, bs.bank_id, bs.units_available, bs.expiry_date
+    `SELECT bs.stock_id, bs.bank_id, bs.units_available,
+            DATE_ADD(d.donation_date, INTERVAL 42 DAY) AS expiry_date
      FROM Blood_Stock bs
-     LEFT JOIN Donation d ON d.donation_id = bs.donation_id
-     WHERE bs.bank_id = ? AND bs.blood_grp = ? AND bs.units_available > 0 AND bs.expiry_date >= CURDATE()
+     JOIN Donation d ON d.donation_id = bs.donation_id
+     WHERE bs.bank_id = ? AND bs.blood_grp = ? AND bs.units_available > 0
+       AND DATE_ADD(d.donation_date, INTERVAL 42 DAY) >= CURDATE()
      ORDER BY d.donation_date ASC, bs.stock_id ASC
      FOR UPDATE`,
     [bank_id, request.blood_grp]
@@ -314,7 +319,7 @@ const fulfillRequest = async (conn, {request_id, bank_id}) => {
     [issued_id, bank_id, request.blood_grp, request.units_required, request_id]
   );
 
-  return { success: true, message: "Request fulfilled successfully.", issued_id };
+  return { success: true, message: "Request fulfilled successfully.", issued_id, hospital_id: request.hospital_id, units_required: request.units_required, blood_grp: request.blood_grp };
 };
 
 const rejectRequest = async (conn, {request_id, bank_id}) => {
@@ -354,10 +359,10 @@ const rejectRequest = async (conn, {request_id, bank_id}) => {
        WHERE request_id = ? AND final_status = 'Processing'`,
       [request_id]
     );
-    return { success: true, message: "Request rejected. All banks have now rejected this request." };
+    return { success: true, message: "Request rejected.", hospital_id: request.hospital_id };
   }
 
-  return { success: true, message: "Request rejected." };
+  return { success: true, message: "Request rejected.", hospital_id: request.hospital_id };
 };
 
 const adjustStock = async (bank_id, stock_id, adjustment) => {
@@ -388,10 +393,12 @@ const writeOffStock = async (bank_id, stock_id) => {
 
 const useOwnStock = async (conn, bank_id, blood_grp, units, reason = "internal_use", request_id = null) => {
   const [stockRows] = await conn.query(
-    `SELECT bs.stock_id, bs.bank_id, bs.units_available, bs.expiry_date
+    `SELECT bs.stock_id, bs.bank_id, bs.units_available,
+            DATE_ADD(d.donation_date, INTERVAL 42 DAY) AS expiry_date
      FROM Blood_Stock bs
-     LEFT JOIN Donation d ON d.donation_id = bs.donation_id
-     WHERE bs.bank_id = ? AND bs.blood_grp = ? AND bs.units_available > 0 AND bs.expiry_date >= CURDATE()
+     JOIN Donation d ON d.donation_id = bs.donation_id
+     WHERE bs.bank_id = ? AND bs.blood_grp = ? AND bs.units_available > 0
+       AND DATE_ADD(d.donation_date, INTERVAL 42 DAY) >= CURDATE()
      ORDER BY d.donation_date ASC, bs.stock_id ASC
      FOR UPDATE`,
     [bank_id, blood_grp]

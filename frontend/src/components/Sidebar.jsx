@@ -8,6 +8,10 @@ function Sidebar() {
         <div className="sidebar">
             <div className="sidebar__brand">BDMS</div>
 
+            <NavLink to="/dashboard/notifications" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
+                Notifications
+            </NavLink>
+
             {role !== "admin" && (
                 <NavLink to="/dashboard/profile" className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}>
                     Profile

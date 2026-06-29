@@ -21,16 +21,29 @@ const getPublicStats = async (req, res) => {
 
 const getPublicBanks = async (req, res) => {
   try {
-    const [rows] = await db.promise().query(
-      `SELECT bs.bank_id, u.name AS bank_name, SUM(bs.units_available) AS units_available, ol.latitude, ol.longitude
-       FROM Blood_Stock bs
-       JOIN \`User\` u ON bs.bank_id = u.user_id
-       LEFT JOIN Organization_Location ol ON ol.organisation_id = bs.bank_id
-       WHERE bs.expiry_date >= CURDATE()
-        GROUP BY bs.bank_id, u.name, ol.latitude, ol.longitude
-        HAVING SUM(bs.units_available) > 0
-        ORDER BY u.name ASC`
-    );
+    const [rows] = await db.promise().query(`
+      SELECT
+          bs.bank_id,
+          u.name AS bank_name,
+          SUM(bs.units_available) AS units_available,
+          ol.latitude,
+          ol.longitude
+      FROM Blood_Stock bs
+      JOIN Donation d
+          ON bs.donation_id = d.donation_id
+      JOIN \`User\` u
+          ON bs.bank_id = u.user_id
+      LEFT JOIN Organization_Location ol
+          ON ol.organisation_id = bs.bank_id
+      WHERE DATE_ADD(d.donation_date, INTERVAL 42 DAY) >= CURDATE()
+      GROUP BY
+          bs.bank_id,
+          u.name,
+          ol.latitude,
+          ol.longitude
+      HAVING SUM(bs.units_available) > 0
+      ORDER BY u.name ASC
+      `);
     return res.json({ success: true, banks: rows });
   } catch (err) {
     console.log('GET BANKS ERR', err);

@@ -20,6 +20,7 @@ const userRoutes = require("./Routes/userRoutes.js")
 const adminRoutes = require("./Routes/adminRoutes.js")
 const publicRoutes = require("./Routes/publicRoutes.js")
 const bankRoutes = require("./Routes/bankRoutes.js")
+const notificationRoutes = require("./Routes/notificationRoutes.js")
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -43,6 +44,7 @@ app.use('/api/user', userRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/public', publicRoutes)
 app.use('/api/bloodbanks', bankRoutes)
+app.use('/api/notifications', notificationRoutes)
 
 // Test route
 

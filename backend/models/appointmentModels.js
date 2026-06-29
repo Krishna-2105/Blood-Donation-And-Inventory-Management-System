@@ -10,7 +10,9 @@ const createAppointment = async (conn, { donor_id, bank_id, appointment_date, ap
 
 const getDonorAppointments = async (donor_id) => {
   const [rows] = await db.promise().query(
-    `SELECT appointment_id, donor_id, bank_id, appointment_date, appointment_time, status, remarks, created_at
+    `SELECT appointment_id, donor_id, bank_id,
+            DATE_FORMAT(appointment_date, '%Y-%m-%d') AS appointment_date,
+            appointment_time, status, remarks, created_at
      FROM Donation_Appointment
      WHERE donor_id = ?
      ORDER BY appointment_date DESC, appointment_time DESC`,
@@ -21,7 +23,9 @@ const getDonorAppointments = async (donor_id) => {
 
 const getBankAppointments = async (bank_id) => {
   const [rows] = await db.promise().query(
-    `SELECT a.appointment_id, a.donor_id, u.name AS donor_name, a.bank_id, a.appointment_date, a.appointment_time, a.status, a.remarks, a.created_at
+    `SELECT a.appointment_id, a.donor_id, u.name AS donor_name, a.bank_id,
+            DATE_FORMAT(a.appointment_date, '%Y-%m-%d') AS appointment_date,
+            a.appointment_time, a.status, a.remarks, a.created_at
      FROM Donation_Appointment a
      LEFT JOIN \`User\` u ON a.donor_id = u.user_id
      WHERE a.bank_id = ?
@@ -33,7 +37,10 @@ const getBankAppointments = async (bank_id) => {
 
 const getAllAppointments = async () => {
   const [rows] = await db.promise().query(
-    `SELECT a.*, du.name AS donor_name, bu.name AS bank_name
+    `SELECT a.appointment_id, a.donor_id, a.bank_id,
+            DATE_FORMAT(a.appointment_date, '%Y-%m-%d') AS appointment_date,
+            a.appointment_time, a.status, a.remarks, a.created_at,
+            du.name AS donor_name, bu.name AS bank_name
      FROM Donation_Appointment a
      LEFT JOIN \`User\` du ON a.donor_id = du.user_id
      LEFT JOIN \`User\` bu ON a.bank_id = bu.user_id
@@ -66,12 +73,23 @@ const cancelAppointment = async (conn, appointment_id) => {
   return result.affectedRows > 0;
 };
 
+const getDonorAppointmentOnDate = async (donor_id, appointment_date) => {
+  const [rows] = await db.promise().query(
+    `SELECT appointment_id FROM Donation_Appointment
+     WHERE donor_id = ? AND appointment_date = ? AND status NOT IN ('Cancelled', 'Rejected', 'Completed')
+     LIMIT 1`,
+    [donor_id, appointment_date]
+  );
+  return rows[0] || null;
+};
+
 module.exports = {
   createAppointment,
   getDonorAppointments,
   getBankAppointments,
   getAllAppointments,
   getAppointmentById,
+  getDonorAppointmentOnDate,
   updateAppointmentStatus,
   cancelAppointment
 };

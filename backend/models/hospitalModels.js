@@ -21,12 +21,13 @@ const searchBanks = async (hospital_id, latitude, longitude, blood_grp, units_re
         COS(RADIANS(?)) * COS(RADIANS(ol.latitude)) * POWER(SIN(RADIANS(ol.longitude - ?)/2), 2)
       ))) AS distance
     FROM Blood_Stock bs
+    JOIN Donation d ON bs.donation_id = d.donation_id
     JOIN User u ON bs.bank_id = u.user_id
     JOIN Organization_Location ol ON bs.bank_id = ol.organisation_id
     LEFT JOIN Owns own ON own.bank_id = bs.bank_id AND own.hospital_id = ?
     WHERE bs.blood_grp = ?
       AND u.user_type = 'blood_bank'
-      AND bs.expiry_date >= CURDATE()
+      AND DATE_ADD(d.donation_date, INTERVAL 42 DAY) >= CURDATE()
       AND own.bank_id IS NULL
     GROUP BY bs.bank_id, u.name, ol.latitude, ol.longitude
     HAVING SUM(bs.units_available) >= ?

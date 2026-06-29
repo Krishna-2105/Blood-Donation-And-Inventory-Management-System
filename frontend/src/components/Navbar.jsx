@@ -1,5 +1,6 @@
 import { useAuth } from "../context/AuthContext";
 import Button from "../ui/Button";
+import NotificationBell from "./NotificationBell";
 
 function Navbar() {
   const { logout } = useAuth();
@@ -12,6 +13,7 @@ function Navbar() {
       </div>
 
       <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <NotificationBell />
         <Button variant="secondary" onClick={() => window.location.href = '/dashboard'}>Home</Button>
         <Button variant="danger" onClick={logout}>Logout</Button>
       </div>

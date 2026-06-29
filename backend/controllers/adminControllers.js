@@ -7,6 +7,13 @@ const {
   deleteUserById,
 } = require("../models/userModels");
 const { createAuditLog, getAuditLogs, getAuditLogById } = require("../models/auditModels");
+const {
+  notifyRequestApproved,
+  notifyRequestRejected,
+  notifyBloodIssued,
+  notifyLargeTransactionToAdmins,
+} = require("../services/notificationService");
+const { LARGE_TRANSACTION_THRESHOLD } = require("../config/bloodConfig");
 
 const getAdminDashboard = async (req, res) => {
   try {
@@ -242,8 +249,9 @@ const getAdminStock = async (req, res) => {
         bs.blood_grp,
         SUM(bs.units_available) AS units
        FROM Blood_Stock bs
+       JOIN Donation d ON bs.donation_id = d.donation_id
        JOIN \`User\` bu ON bs.bank_id = bu.user_id
-       WHERE bs.expiry_date >= CURDATE()
+       WHERE DATE_ADD(d.donation_date, INTERVAL 42 DAY) >= CURDATE()
        GROUP BY bs.bank_id, bu.name, bs.blood_grp
        ORDER BY bu.name ASC, bs.blood_grp ASC`
     );
@@ -296,6 +304,13 @@ const approveAdminRequest = async (req, res) => {
     if (!result.success) { await conn.rollback(); return res.status(400).json(result); }
     await conn.commit();
     try { await createAuditLog({ admin_user_id: req.user.user_id, action_type: 'request_approve', entity_type: 'request', entity_id: request_id, previous_values: null, new_values: { approved_by_bank: bank_id } }); } catch (e) { console.log('AUDIT ERR', e); }
+    try {
+      await notifyRequestApproved(result.hospital_id, request_id, bank_id);
+      await notifyBloodIssued(result.hospital_id, request_id, result.issued_id, result.units_required);
+      if (Number(result.units_required) >= LARGE_TRANSACTION_THRESHOLD) {
+        await notifyLargeTransactionToAdmins(result.hospital_id, request_id, result.units_required);
+      }
+    } catch (e) { console.log('NOTIFICATION ERR', e); }
     return res.json({ ...result, notification: { type: 'success', text: 'Request approved by admin' } });
   } catch (err) {
     await conn.rollback();
@@ -318,6 +333,7 @@ const rejectAdminRequest = async (req, res) => {
     if (!result.success) { await conn.rollback(); return res.status(400).json(result); }
     await conn.commit();
     try { await createAuditLog({ admin_user_id: req.user.user_id, action_type: 'request_reject', entity_type: 'request', entity_id: request_id, previous_values: null, new_values: { rejected_by_bank: bank_id } }); } catch (e) { console.log('AUDIT ERR', e); }
+    try { await notifyRequestRejected(result.hospital_id, request_id, bank_id); } catch (e) { console.log('NOTIFICATION ERR', e); }
     return res.json({ ...result, notification: { type: 'warning', text: 'Request rejected by admin' } });
   } catch (err) {
     await conn.rollback();

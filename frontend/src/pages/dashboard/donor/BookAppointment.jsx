@@ -5,14 +5,28 @@ import Input from '../../../ui/Input';
 import Button from '../../../ui/Button';
 import { useToast } from '../../../context/ToastContext';
 
+function getMinDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + 2);
+  return d.toISOString().slice(0, 10);
+}
+
+function getMaxDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + 30);
+  return d.toISOString().slice(0, 10);
+}
+
 export default function BookAppointment() {
   const [banks, setBanks] = useState([]);
   const [form, setForm] = useState({ bank_id: '', appointment_date: '', appointment_time: '', remarks: '' });
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
+  const minDate = getMinDate();
+  const maxDate = getMaxDate();
+
   useEffect(() => {
-    // fetch nearby banks without filters (reuse hospital find endpoint not ideal but keep simple)
     async function fetchBanks() {
       try {
         const res = await API.get('/public/banks');
@@ -31,7 +45,6 @@ export default function BookAppointment() {
       showToast('success', 'Appointment requested');
       setForm({ bank_id: '', appointment_date: '', appointment_time: '', remarks: '' });
     } catch (err) {
-      console.error(err);
       showToast('error', err.response?.data?.message || 'Failed to create appointment');
     } finally { setLoading(false); }
   };
@@ -49,7 +62,14 @@ export default function BookAppointment() {
                 {banks.map(b=> <option key={b.bank_id} value={b.bank_id}>{b.bank_name} ({b.units_available || 0} units)</option>)}
               </select>
             </div>
-            <Input label="Date" type="date" value={form.appointment_date} onChange={(e)=>setForm({...form, appointment_date: e.target.value})} />
+            <Input
+              label="Date"
+              type="date"
+              value={form.appointment_date}
+              min={minDate}
+              max={maxDate}
+              onChange={(e)=>setForm({...form, appointment_date: e.target.value})}
+            />
             <Input label="Time" type="time" value={form.appointment_time} onChange={(e)=>setForm({...form, appointment_time: e.target.value})} />
             <div className="field">
               <div className="label">Remarks</div>
