@@ -339,7 +339,7 @@ erDiagram
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Krishna-2105/Blood-Donation-And-Inventory-Management-System
 cd Blood-Donation-And-Inventory-Management-System
 ```
 
