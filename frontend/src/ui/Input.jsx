@@ -7,4 +7,3 @@ export default function Input({ label, as = "input", className = "", ...props })
     </div>
   );
 }
-

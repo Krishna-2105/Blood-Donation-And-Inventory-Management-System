@@ -7,7 +7,7 @@ function DonorDashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const last = await API.get("/donor/last");
+      const last = await API.get("/donor/lastdt");
       const hist = await API.get("/donor/history");
 
       setLastDonation(last.data);
@@ -25,8 +25,8 @@ function DonorDashboard() {
       {/* Card */}
       <div style={card}>
         <h3>Last Donation</h3>
-        {lastDonation ? (
-          <p>{lastDonation.date}</p>
+        {lastDonation && lastDonation.lastDonation ? (
+          <p>{new Date(lastDonation.lastDonation.donation_date).toISOString().slice(0,10)}</p>
         ) : (
           <p>No donations yet</p>
         )}

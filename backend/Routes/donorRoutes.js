@@ -25,5 +25,6 @@ router.get('/profile',authMiddleWare,roleMiddleware("DNR"),donorProfileRoute);
 router.get('/history',authMiddleWare,roleMiddleware("DNR"),historyRoute);
 
 router.get('/lastdt',authMiddleWare,roleMiddleware("DNR"),lastDonationRoute);
+router.get('/eligibility', authMiddleWare, roleMiddleware('DNR'), require('../controllers/donorControllers').eligibilityRoute);
 
 module.exports = router;

@@ -113,11 +113,7 @@ function Login() {
                     </Button>
                 </form>
 
-                <p className="muted" style={{ marginTop: 12 }}>
-                    <Link to="/forgot-password" style={{ color: "var(--color-primary)", fontWeight: 700 }}>
-                        Forgot Password?
-                    </Link>
-                </p>
+                {/* Forgot Password flow removed. If you want to restore it later re-enable the component and route. */}
 
                 <p className="muted" style={{ marginTop: 10 }}>
                     Don't have an account? <Link to="/signup" style={{ color: "var(--color-primary)", fontWeight: 700 }}>Signup</Link>

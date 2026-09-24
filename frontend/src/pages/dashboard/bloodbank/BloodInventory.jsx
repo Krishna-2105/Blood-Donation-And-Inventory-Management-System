@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import API from "../../../api/axios";
 import Card from "../../../ui/Card";
-import EmptyState from "../../../ui/EmptyState";
 import { formatDate } from "../../../utils/formatDate";
+import EmptyState from "../../../ui/EmptyState";
 
 function BloodInventory() {
   const [data, setData] = useState(null);

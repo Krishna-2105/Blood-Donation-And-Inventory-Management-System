@@ -1,4 +1,5 @@
 const { createUser } = require("../models/userModels");
+const { notifyNewRegistrationToAdmins } = require("../services/notificationService");
 
 const signupUser = async (req, res) => {
   try {
@@ -13,7 +14,8 @@ const signupUser = async (req, res) => {
     const phone_no = typeof rawPhone === "string" ? rawPhone.trim() : "";
     const password = typeof rawPassword === "string" ? rawPassword.trim() : "";
     const user_type = typeof rawUserType === "string" ? rawUserType.trim() : "";
-    const allowedUserTypes = ["donor", "hospital", "blood_bank", "admin"];
+    // Public signup allowed roles (admin cannot be self-registered)
+    const allowedUserTypes = ["donor", "hospital", "blood_bank"];
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!name || !email || !password || !user_type) {
@@ -22,8 +24,16 @@ const signupUser = async (req, res) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
     if (!allowedUserTypes.includes(user_type)) {
       return res.status(400).json({ message: "Invalid user type" });
+    }
+
+    // Explicit rejection for admin role even if provided
+    if (user_type === "admin") {
+      return res.status(403).json({ message: "Cannot register as admin" });
     }
 
     const created = await createUser({
@@ -37,6 +47,12 @@ const signupUser = async (req, res) => {
     // server generates ids; enforce prefix correctness
     if (user_type === "admin" && !created.user_id.startsWith("ADM")) {
       return res.status(400).json({ message: "Admin ID must start with ADM" });
+    }
+
+    try {
+      await notifyNewRegistrationToAdmins(created.user_id, user_type);
+    } catch (e) {
+      console.log("NOTIFICATION ERR:", e);
     }
 
     res.status(201).json({

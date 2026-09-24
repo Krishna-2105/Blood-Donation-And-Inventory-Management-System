@@ -10,6 +10,10 @@ function DashboardLayout() {
         <Navbar />
         <div className="content">
           <div className="container">
+            <div style={{ marginBottom: 16 }}>
+              <h2 style={{ marginBottom: 4 }}>Welcome to BDMS</h2>
+              <div className="muted">Manage donations, stock, requests and users centrally</div>
+            </div>
             <Outlet />
           </div>
         </div>

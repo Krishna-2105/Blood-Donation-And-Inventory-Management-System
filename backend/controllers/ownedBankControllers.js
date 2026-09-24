@@ -1,6 +1,14 @@
 const db = require("../config/db");
 const { v4: uuidv4 } = require("uuid");
 const {
+  notifyRequestApproved,
+  notifyRequestRejected,
+  notifyBloodIssued,
+  notifyLargeTransactionToAdmins,
+  checkLowStockAndNotify,
+} = require("../services/notificationService");
+const { LARGE_TRANSACTION_THRESHOLD } = require("../config/bloodConfig");
+const {
   checkDonorExists,
   checkDonorEligibility,
   insertDonation,
@@ -86,6 +94,13 @@ const addOwnedDonation = async (req, res) => {
       donation_id
     });
     await conn.commit();
+
+    try {
+      await checkLowStockAndNotify(req.bank_id);
+    } catch (e) {
+      console.log("NOTIFICATION ERR:", e);
+    }
+
     return res.status(201).json({
       success: true,
       message: "Donation successful",
@@ -111,6 +126,17 @@ const fulfillOwnedRequest = async (req, res) => {
       return res.status(400).json(result);
     }
     await conn.commit();
+
+    try {
+      await notifyRequestApproved(result.hospital_id, req.params.request_id, req.bank_id);
+      await notifyBloodIssued(result.hospital_id, req.params.request_id, result.issued_id, result.units_required);
+      if (Number(result.units_required) >= LARGE_TRANSACTION_THRESHOLD) {
+        await notifyLargeTransactionToAdmins(result.hospital_id, req.params.request_id, result.units_required);
+      }
+    } catch (e) {
+      console.log("NOTIFICATION ERR:", e);
+    }
+
     return res.json({
       ...result,
       notification: { type: "success", text: "Request fulfilled successfully" }
@@ -134,6 +160,13 @@ const rejectOwnedRequest = async (req, res) => {
       return res.status(400).json(result);
     }
     await conn.commit();
+
+    try {
+      await notifyRequestRejected(result.hospital_id, req.params.request_id, req.bank_id);
+    } catch (e) {
+      console.log("NOTIFICATION ERR:", e);
+    }
+
     return res.json({
       ...result,
       notification: { type: "warning", text: "Request rejected" }
@@ -208,6 +241,16 @@ const useStockRoute = async (req, res) => {
       return res.status(400).json(result);
     }
     await conn.commit();
+
+    try {
+      await notifyBloodIssued(req.user.user_id, request_id, result.issued_id, Number(units));
+      if (Number(units) >= LARGE_TRANSACTION_THRESHOLD) {
+        await notifyLargeTransactionToAdmins(req.user.user_id, request_id, Number(units));
+      }
+    } catch (e) {
+      console.log("NOTIFICATION ERR:", e);
+    }
+
     return res.json({
       ...result,
       request_id,

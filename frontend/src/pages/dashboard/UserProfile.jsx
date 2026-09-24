@@ -72,6 +72,7 @@ function UserProfile() {
               <tr><th>Email</th><td>{data.email}</td></tr>
               <tr><th>Phone</th><td>{data.phone_no}</td></tr>
               <tr><th>Role</th><td>{data.user_type}</td></tr>
+              <tr><th>Created</th><td>{formatDate(data.created_dt || data.created_at)}</td></tr>
             </tbody>
           </table>
         </Card>
@@ -124,4 +125,3 @@ function UserProfile() {
 }
 
 export default UserProfile;
-

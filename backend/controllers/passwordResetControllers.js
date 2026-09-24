@@ -4,6 +4,8 @@ const { findUserByEmail, updatePasswordHash } = require("../models/userProfileMo
 
 // In-memory token store (no DB, no email)
 // token -> { user_id, createdAt }
+// The entire password-reset controller is commented out so the logic can be re-used later if needed.
+/*
 const resetTokens = {};
 const TOKEN_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
@@ -76,4 +78,4 @@ module.exports = {
   forgotPasswordRoute,
   resetPasswordRoute,
 };
-
+*/

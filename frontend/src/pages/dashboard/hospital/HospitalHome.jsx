@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../../../api/axios";
 import Card from "../../../ui/Card";
+import { formatDate } from "../../../utils/formatDate";
 
 function HospitalHome() {
   const [data, setData] = useState(null);
@@ -35,6 +36,10 @@ function HospitalHome() {
           <h2>{data.rejected_requests ?? data.cancelled_requests ?? 0}</h2>
           <p className="muted">Rejected requests</p>
         </Card>
+      </div>
+      <div style={{ marginTop: 12 }}>
+        <div className="muted">Member Since</div>
+        <div style={{ fontFamily: 'monospace', fontWeight: 800 }}>{formatDate(data.created_dt || data.created_at)}</div>
       </div>
     </div>
   );

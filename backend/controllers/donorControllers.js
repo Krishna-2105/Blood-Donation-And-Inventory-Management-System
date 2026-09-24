@@ -1,5 +1,6 @@
 // const getProfile = require("../models/profileModels");
 const {getDonorDetails,getHistory,getLastDonation}=require("../models/donorModels")
+const { getDonorEligibility } = require('../models/donorModels');
 const {getProfile}=require("../models/profileModels")
 const donorProfileRoute=async (req,res)=>{
       try {
@@ -85,6 +86,17 @@ const lastDonationRoute=async (req,res)=>{
     }
 }
 
+const eligibilityRoute = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const eligibility = await getDonorEligibility(userId);
+    return res.status(200).json({ success: true, ...eligibility });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+}
+
 module.exports={
-    donorProfileRoute,historyRoute,lastDonationRoute
+    donorProfileRoute,historyRoute,lastDonationRoute,eligibilityRoute
 }   

@@ -1,84 +1,40 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+/*
+import { useState } from "react";
 import API from "../../api/axios";
+import { useToast } from "../../context/ToastContext";
 import Card from "../../ui/Card";
 import Input from "../../ui/Input";
 import Button from "../../ui/Button";
-import { useToast } from "../../context/ToastContext";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function ResetPassword() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const [form, setForm] = useState({ token: "", new_password: "", confirm_password: "" });
   const { showToast } = useToast();
-
-  const [form, setForm] = useState({
-    token: "",
-    new_password: "",
-  });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { state } = useLocation();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (location.state?.token) {
-      setForm((p) => ({ ...p, token: location.state.token }));
-    }
-  }, [location.state]);
+  useState(()=>{
+    if (state?.token) setForm(f=>({ ...f, token: state.token }));
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.token || !form.new_password) {
-      setError("All fields are required");
-      return;
-    }
-    if (String(form.new_password).length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
-    try {
-      setLoading(true);
-      setError("");
-      await API.post("/auth/reset-password", form);
-      showToast("success", "Password reset successfully");
-      navigate("/login");
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to reset password");
-      showToast("error", "Failed to reset password");
-    } finally {
-      setLoading(false);
-    }
+  // reset-password API removed. To re-enable, uncomment the request below and re-enable backend endpoints.
+  const handleSubmit = async () => {
+    showToast('warning', 'Reset-password flow disabled');
   };
 
   return (
     <div className="auth-page">
       <Card className="auth-card">
-        <h2 style={{ marginBottom: 12 }}>Reset Password</h2>
-        {error ? <p style={{ color: "var(--color-error)", marginBottom: 12 }}>{error}</p> : null}
-
-        <form onSubmit={handleSubmit} className="form">
-          <Input
-            label="Reset Token"
-            value={form.token}
-            onChange={(e) => setForm({ ...form, token: e.target.value })}
-            placeholder="paste uuid token"
-          />
-          <Input
-            label="New Password"
-            type="password"
-            value={form.new_password}
-            onChange={(e) => setForm({ ...form, new_password: e.target.value })}
-          />
-          <Button type="submit" disabled={loading}>
-            {loading ? "Resetting..." : "Reset Password"}
-          </Button>
-        </form>
-
-        <p className="muted" style={{ marginTop: 12 }}>
-          <Link to="/login" style={{ color: "var(--color-primary)", fontWeight: 700 }}>Back to login</Link>
-        </p>
+        <h2>Reset Password</h2>
+        <Input label="Token" value={form.token} onChange={(e)=>setForm({...form, token: e.target.value})} />
+        <Input label="New Password" type="password" value={form.new_password} onChange={(e)=>setForm({...form, new_password: e.target.value})} />
+        <Input label="Confirm Password" type="password" value={form.confirm_password} onChange={(e)=>setForm({...form, confirm_password: e.target.value})} />
+        <Button onClick={handleSubmit} disabled={loading}>{loading? 'Saving...' : 'Reset Password'}</Button>
       </Card>
     </div>
   );
 }
 
 export default ResetPassword;
-
+*/
