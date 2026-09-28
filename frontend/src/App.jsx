@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
 
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
@@ -52,6 +53,12 @@ import Landing from "./pages/Landing";
 import NearbyBanks from "./pages/public/NearbyBanks";
 
 function App() {
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("bdms-theme") || "dark";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    document.documentElement.style.colorScheme = savedTheme;
+  }, []);
+
   const RootRedirect = () => {
     const { token } = useAuth();
     if (token) return <Navigate to="/dashboard" replace />;
