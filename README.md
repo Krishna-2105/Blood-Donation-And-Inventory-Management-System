@@ -97,7 +97,9 @@ In-app notifications with a navbar bell (unread count), mark-as-read, and mark-a
 
 ### 🌐 Public Pages
 - **Landing page** with live platform stats (users, donors, donations, requests)
-- **Nearby banks** (`/nearby-banks`) — enter latitude, longitude, and radius to find banks with unexpired stock
+
+### 🎨 User Experience
+- **Dark / light mode toggle** available in the top navbar for better readability
 
 ---
 

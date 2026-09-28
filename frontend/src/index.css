@@ -1,14 +1,19 @@
 :root {
   --color-primary: #b91c1c;
-  --color-accent: #2563eb;
+  --color-primary-soft: #fca5a5;
   --color-success: #16a34a;
-  --color-error: #dc2626;
+  --color-error: #ef4444;
   --color-warning: #f59e0b;
-  --color-bg: #f8fafc;
-  --color-card: #ffffff;
-  --color-text: #0f172a;
-  --color-muted: #475569;
-  --color-border: #e6eef6;
+  --color-bg: #0f172a;
+  --color-surface: #111827;
+  --color-card: #1f2937;
+  --color-card-strong: #111827;
+  --color-text: #e2e8f0;
+  --color-muted: #94a3b8;
+  --color-border: #334155;
+  --color-border-strong: #1f2a3b;
+  --color-accent: #f87171;
+  --color-link: #fca5a5;
 
   --space-8: 8px;
   --space-12: 12px;
@@ -18,8 +23,28 @@
   --space-32: 32px;
 
   --radius-12: 12px;
+  --radius-10: 10px;
   --radius-8: 8px;
-  --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.06);
+  --shadow-card: 0 20px 45px rgba(15, 23, 42, 0.45);
+}
+
+:root[data-theme="light"] {
+  --color-primary: #b91c1c;
+  --color-primary-soft: #fecaca;
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --color-warning: #f59e0b;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-card: #ffffff;
+  --color-card-strong: #f8fafc;
+  --color-text: #0f172a;
+  --color-muted: #475569;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-accent: #ef4444;
+  --color-link: #b91c1c;
+  --shadow-card: 0 18px 35px rgba(15, 23, 42, 0.08);
 }
 
 * {
@@ -31,9 +56,14 @@
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
-body {
+html {
   background: var(--color-bg);
+}
+
+body {
+  background: radial-gradient(circle at top, rgba(244, 63, 94, 0.14), transparent 28%), var(--color-bg);
   color: var(--color-text);
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
 /* Improved typography */
@@ -150,6 +180,22 @@ p {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.theme-toggle {
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--color-border-strong);
+  transform: translateY(-1px);
+}
+
 .btn {
   background: var(--color-primary);
   color: white;
@@ -193,15 +239,33 @@ p {
 .input, select.input {
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(15,23,42,0.06);
+  border: 1px solid var(--color-border);
   outline: none;
-  background: #fff;
-  transition: box-shadow 120ms ease, border-color 120ms ease;
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: box-shadow 120ms ease, border-color 120ms ease, background 180ms ease, color 180ms ease;
+}
+
+.input::placeholder {
+  color: var(--color-muted);
 }
 
 .input:focus, select.input:focus {
   border-color: rgba(185,28,28,0.9);
   box-shadow: 0 6px 18px rgba(37,99,235,0.06);
+}
+
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus,
+.input:-webkit-autofill:active,
+select.input:-webkit-autofill,
+select.input:-webkit-autofill:hover,
+select.input:-webkit-autofill:focus,
+select.input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset !important;
+  -webkit-text-fill-color: var(--color-text) !important;
+  caret-color: var(--color-text);
 }
 
 .form {
